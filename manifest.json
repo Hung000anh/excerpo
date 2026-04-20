@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Mạch nha Grabber",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs",
+    "storage",
+    "unlimitedStorage",
+    "webNavigation",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://www.17k.com/*",
+    "https://17k.com/*",
+    "https://www.22biqu.com/*",
+    "https://22biqu.com/*",
+    "https://uukanshu.cc/*",
+    "https://www.uukanshu.cc/*",
+    "https://www.jjwxc.net/*",
+    "http://www.jjwxc.net/*",
+    "https://www.qidian.com/*",
+    "https://qidian.com/*",
+    "https://www.biquge.tw/*",
+    "https://www.52shuku.net/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
