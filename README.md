@@ -31,25 +31,26 @@ Mục đích chính của công cụ là phục vụ cho nhu cầu lưu trữ of
 ## ⚙️ Hướng dẫn cài đặt
 Vì đây là phiên bản dành cho nhà phát triển, bạn có thể dễ dàng cài đặt tiện ích này thông qua chế độ **Developer Mode** của trình duyệt.
 1. Nhấn nút màu xanh `Code` -> **Download ZIP** và giải nén thư mục ra máy tính.
-![alt text](images\image1.png)
-2. Mở trình duyệt, truy cập vào trang Quản lý tiện ích:
-![alt text](images\image3.png)
-hoặc
+   <br><img src="images/image1.png" width="400" alt="Minh họa Download ZIP">
+2. Mở trình duyệt, truy cập vào trang Quản lý tiện ích (hoặc nhấp vào 1 trong các link dưới):
    * Chrome: `chrome://extensions/`
    * Edge: `edge://extensions/`
    * Cốc Cốc: `coccoc://extensions/`
+   <br><img src="images/image3.png" width="400" alt="Trang quản lý tiện ích">
 3. Bật **Chế độ dành cho nhà phát triển (Developer mode)** ở góc trên bên phải.
-![alt text](images\image2.png)
+   <br><img src="images/image2.png" width="400" alt="Bật Developer Mode">
 4. Chọn **Tải tiện ích đã giải nén (Load unpacked)** và trỏ tới thư mục Excerpo bạn vừa giải nén.
-![alt text](images\image4.png)
+   <br><img src="images/image4.png" width="400" alt="Tải tiện ích giải nén">
+
 ## ⚠️ Khuyến nghị cài đặt Trình duyệt (Quan trọng)
 Để công cụ có thể tự động lưu hàng ngàn tệp tin mà không bị treo máy bởi các hộp thoại hỏi vòng lặp:
 * Đi tới `chrome://settings/downloads`.
 * Chọn thư mục gốc để lưu tệp tin (Excerpo sẽ tự động tạo thư mục con theo tên truyện bên trong thư mục gốc này).
 * **TẮT** tuỳ chọn: *"Hỏi vị trí lưu từng tệp trước khi tải xuống"*.
 
-<!-- BẠN THÊM LINK ẢNH MINH HỌA CÀI ĐẶT TRÌNH DUYỆT VÀO BÊN DƯỚI -->
-![Cài đặt tắt hộp thoại download](images\image5.png)
+<div align="center">
+  <img src="images/image5.png" width="800" alt="Cài đặt tắt hộp thoại download">
+</div>
 
 ## ⚖️ Điều khoản & Miễn trừ trách nhiệm
 Excerpo được xây dựng **100% phi thương mại** và không phục vụ mục đích phân phối lại tác phẩm có bản quyền. Người dùng chịu trách nhiệm hoàn toàn về các hành vi chia sẻ công cộng dữ liệu tải về.
