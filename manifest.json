@@ -30,6 +30,9 @@
     "https://cdn.jsdelivr.net/*",
     "https://tessdata.projectnaptha.com/*",
     "https://html2canvas.hertzen.com/*",
+    "https://*.69shuba.com/*",
+    "https://*.69shuba.cx/*",
+    "https://*.69shux.com/*",
     "https://example.com/*"
   ],
   "icons": {
