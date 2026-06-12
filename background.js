@@ -268,7 +268,31 @@ async function runBatchDownload() {
             continue;
           }
 
-          break; // Thành công hoặc lỗi thường
+          const isContentError = !result || !result.content ||
+            result.content.includes("NỘI DUNG CHƯA TẢI ĐƯỢC") ||
+            result.content.includes("Hệ thống không tìm thấy nội dung") ||
+            result.content.includes("Lỗi tải nội dung") ||
+            result.content.includes("Lỗi:") ||
+            result.content.length < 100;
+
+          if (isContentError) {
+            retryCount++;
+            if (retryCount < MAX_RETRY) {
+              console.warn(`[Worker ${workerId}] Lỗi nội dung "${c.chapter_title}", thử lại (${retryCount}/${MAX_RETRY})`);
+
+              activeBatchTask.activeChapters[workerId] = `⏳ Lỗi nội dung, thử lại (${retryCount}/${MAX_RETRY}): ${c.chapter_title}`;
+              saveTaskToStorage();
+              chrome.runtime.sendMessage({ type: 'TASK_PROGRESS', data: activeBatchTask }).catch(() => { });
+
+              await keepAliveWait(5000);
+
+              activeBatchTask.activeChapters[workerId] = chapterDisplayTitle;
+              chrome.runtime.sendMessage({ type: 'TASK_PROGRESS', data: activeBatchTask }).catch(() => { });
+              continue;
+            }
+          } else {
+            break; // Thành công, thoát vòng lặp
+          }
         }
 
         // ❌ ĐÃ XÓA: if (activeBatchTask.status !== 'running') break;
