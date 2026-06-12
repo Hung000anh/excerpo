@@ -17,17 +17,21 @@
 
 Mục đích chính của công cụ là phục vụ cho nhu cầu lưu trữ offline cá nhân, nghiên cứu kỹ thuật xử lý ngôn ngữ và hỗ trợ dịch thuật tự động.
 
-<!-- BẠN THÊM LINK ẢNH GIAO DIỆN CHÍNH CỦA TOOL VÀO BÊN DƯỚI -->
-![Giao diện chính của Excerpo](https://via.placeholder.com/800x400.png?text=Hinh+Anh+Giao+Dien+Chinh+(Thay+link+vao+day))
+## 📷 Ảnh chụp màn hình
+<div align="center">
+  <img src="images/cao.jpg" width="400" alt="Giao diện Cào">
+  <img src="images/doi.jpg" width="400" alt="Hàng đợi tải ngầm">
+</div>
+<div align="center">
+  <img src="images/cai_dat.jpg" width="400" alt="Cài đặt">
+  <img src="images/luu_y.jpg" width="400" alt="Lưu ý">
+</div>
 
 ## 🚀 Tính năng nổi bật
 * **Đa nền tảng:** Hỗ trợ quét và tải mượt mà từ nhiều website lớn như: `17k`, `qidian`, `jjwxc`, `biquge`, `52shuku`, `fanqienovel`, `uukanshu`...
 * **Auto-Bypass Rate Limit & Captcha:** Tích hợp OCR (Tesseract.js) chạy ngầm để đọc và xử lý captcha khi cào dữ liệu, cũng như thuật toán delay thông minh tránh bị chặn IP.
 * **Tải ngầm đa luồng:** Hoạt động độc lập bằng Service Worker dưới nền. Bạn có thể lướt web bình thường, tắt tab, tool vẫn kiên nhẫn tải hàng ngàn chương mà không lo đứt gãy.
 * **Tuỳ biến File & Định dạng linh hoạt:** Cho phép trích xuất ra định dạng văn bản chuẩn `.txt` hoặc tệp Word `.docx` cực nhẹ. Hỗ trợ tự do cấu hình quy tắc đặt tên file (VD: `chuong-{index}_{title}`).
-
-<!-- BẠN THÊM LINK ẢNH MINH HỌA QUÁ TRÌNH TẢI HOẶC THIẾT LẬP VÀO BÊN DƯỚI -->
-![Quá trình tải ngầm](https://via.placeholder.com/800x400.png?text=Hinh+Anh+Qua+Trinh+Tai+(Thay+link+vao+day))
 
 ## ⚙️ Hướng dẫn cài đặt
 Vì đây là phiên bản dành cho nhà phát triển, bạn có thể dễ dàng cài đặt tiện ích này thông qua chế độ **Developer Mode** của trình duyệt.
