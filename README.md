@@ -49,7 +49,7 @@ hoặc
 * **TẮT** tuỳ chọn: *"Hỏi vị trí lưu từng tệp trước khi tải xuống"*.
 
 <!-- BẠN THÊM LINK ẢNH MINH HỌA CÀI ĐẶT TRÌNH DUYỆT VÀO BÊN DƯỚI -->
-![Cài đặt tắt hộp thoại download](images\image.png)
+![Cài đặt tắt hộp thoại download](images\image5.png)
 
 ## ⚖️ Điều khoản & Miễn trừ trách nhiệm
 Excerpo được xây dựng **100% phi thương mại** và không phục vụ mục đích phân phối lại tác phẩm có bản quyền. Người dùng chịu trách nhiệm hoàn toàn về các hành vi chia sẻ công cộng dữ liệu tải về.
