@@ -34,7 +34,7 @@ const Source69shuba = {
       if (url.endsWith('.htm')) return url.replace(/\.htm$/, '/');
       return url.endsWith('/') ? url : url + '/';
     },
-    readySelector: ".catalog ul li a",
+    readySelector: "#catalog ul li a",
     extract: (selector) => {
       const elements = [...document.querySelectorAll(selector)];
       return elements.map((el, i) => {
@@ -46,7 +46,7 @@ const Source69shuba = {
         };
       }).filter(c => c.chapter_url && !c.chapter_url.includes('javascript:'));
     },
-    extractArgs: () => [".catalog ul li a"]
+    extractArgs: () => ["#catalog ul li a"]
   },
 
   // ── Content config ─────────────────────────────────────────────────────────
