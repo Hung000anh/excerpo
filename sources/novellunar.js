@@ -6,7 +6,7 @@ const SourceNovelLunar = {
   // ── Preview config ────────────────────────────────────────────────────────
   preview: {
     fields: {
-      bookName: "h1",
+      bookName: "div.flex-1 h1",
       authorName: { custom: (doc) => {
         const a = doc.querySelector('a[href^="/author/"]');
         return a ? a.textContent.trim() : null;
