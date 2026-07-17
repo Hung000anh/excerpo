@@ -17,11 +17,14 @@ Mục đích chính của công cụ là phục vụ cho nhu cầu lưu trữ of
 
 ## 📷 Ảnh chụp màn hình
 
-| 🎯 Giao diện chính (Cào dữ liệu) | ⏳ Hàng đợi tải ngầm (Quản lý tiến độ) |
+| 🎯 Giao diện chính (Cào dữ liệu) | ⚡ Danh sách chương (Tải ngầm) |
 | :---: | :---: |
-| <img src="images/anhcao.png" width="400" alt="Giao diện Cào"> | <img src="images/z7927269022338_77ce97ec5bec0ea8be67eb4816ea4a4b.jpg" width="400" alt="Hàng đợi tải ngầm"> |
-| **⚙️ Bảng Cài đặt (Định dạng & Thư mục)** | **⚠️ Điều khoản & Lưu ý sử dụng** |
-| <img src="images/z7927269071829_85bef00b8acf6c77b2f30d36422cfd45.jpg" width="400" alt="Cài đặt"> | <img src="images/z7927269122181_8c444270eec616307d21d0df4c4ab569.jpg" width="400" alt="Lưu ý"> |
+| <img src="images/anhcao.png" width="400" alt="Giao diện Cào"> | <img src="images/image.png" width="400" alt="Danh sách chương"> |
+| **⏳ Hàng đợi tải ngầm (Quản lý tiến độ)** | **⚙️ Bảng Cài đặt (Định dạng & Thư mục)** |
+| <img src="images/z7927269022338_77ce97ec5bec0ea8be67eb4816ea4a4b.jpg" width="400" alt="Hàng đợi tải ngầm"> | <img src="images/z7927269071829_85bef00b8acf6c77b2f30d36422cfd45.jpg" width="400" alt="Cài đặt"> |
+| **☕ Hỗ trợ phát triển (Ủng hộ tác giả)** | **⚠️ Điều khoản & Lưu ý sử dụng** |
+| <img src="images/z7927269040101_501b9119404e391aeb70baef882fed49.jpg" width="400" alt="Ủng hộ tác giả"> | <img src="images/z7927269122181_8c444270eec616307d21d0df4c4ab569.jpg" width="400" alt="Lưu ý"> |
+
 
 ## 🚀 Tính năng nổi bật
 * **Đa nền tảng:** Hỗ trợ quét và tải mượt mà từ hàng loạt nền tảng đọc truyện trực tuyến, chia theo các quốc gia:
@@ -36,7 +39,7 @@ Mục đích chính của công cụ là phục vụ cho nhu cầu lưu trữ of
   - <img src="https://flagcdn.com/w20/fr.png" width="16" alt="FR"> **Pháp:** `chireads`.
 * **Auto-Bypass Rate Limit & Captcha:** Tích hợp OCR (Tesseract.js) chạy ngầm để đọc và khi cào dữ liệu, cũng như thuật toán delay thông minh tránh bị chặn IP.
 * **Tải ngầm đa luồng:** Hoạt động độc lập bằng Service Worker dưới nền. Bạn có thể lướt web bình thường, tắt tab, tool vẫn kiên nhẫn tải hàng ngàn chương mà không lo đứt gãy.
-* **Tuỳ biến File & Định dạng linh hoạt:** Cho phép trích xuất ra định dạng văn bản chuẩn `.txt` hoặc tệp Word `.docx` cực nhẹ. Hỗ trợ tự do cấu hình quy tắc đặt tên file (VD: `chuong-{index}_{title}`).
+* **Tuỳ biến File & Định dạng linh hoạt:** Cho phép trích xuất ra định dạng văn bản chuẩn `.txt`, tệp Word `.docx` hoặc sách điện tử `.epub` cực nhẹ. Hỗ trợ tự do cấu hình quy tắc đặt tên file bằng các từ khóa động như `{index}` (số thứ tự chương) và `{title}` (tiêu đề chương) (Ví dụ: `chuong-{index}_{title}` -> `chuong-1_Khai_thien`, hoặc `Chương {index} - {title}` -> `Chương 1 - Khai thiên`).
 
 ## ⚙️ Hướng dẫn cài đặt
 Vì đây là phiên bản dành cho nhà phát triển, bạn có thể dễ dàng cài đặt tiện ích này thông qua chế độ **Developer Mode** của trình duyệt.
