@@ -68,6 +68,27 @@ Vì đây là phiên bản dành cho nhà phát triển, bạn có thể dễ d�
   <img src="images/image5.png" width="800" alt="Cài đặt tắt hộp thoại download">
 </div>
 
+## 📖 Hướng dẫn sử dụng
+
+1. **Dán link truyện**: Truy cập trang web đọc truyện nguồn, sao chép URL trang giới thiệu truyện. Dán link vào thanh nhập liệu trên Excerpo và nhấn **Gửi**.
+<div align="center">
+  <img src="images/z7927269071833_b959820cf9183640c0d4d359a7e89863.jpg" width="500" alt="Giao diện xem trước truyện và lấy chương">
+</div>
+
+2. **Lấy danh sách chương**: Sau khi tiện ích quét xong thông tin tác phẩm, nhấn nút **Lấy danh sách chapter** để hiển thị toàn bộ các chương.
+<div align="center">
+  <img src="images/image copy.png" width="500" alt="Giao diện xem trước truyện và lấy chương">
+</div>
+
+3. **Bắt đầu tải ngầm**: Tự do lựa chọn các chương muốn tải (hoặc dùng thanh **Chọn nhanh** bằng cách nhập dải số, ví dụ `1-50, 60-70`), sau đó nhấn nút **Tải các chương đã chọn (Chạy ngầm)**.
+<div align="center">
+  <img src="images/image copy 2.png" width="500" alt="Giao diện xem trước truyện và lấy chương">
+</div>
+
+4. **Quản lý hàng đợi**: Theo dõi tiến độ tải đa luồng của từng chương truyện tại tab **Hàng đợi** (📋). Bạn có thể bấm nút dừng hoặc huỷ bất cứ lúc nào.
+
+
+
 ## ⚖️ Điều khoản & Miễn trừ trách nhiệm
 Excerpo được cung cấp **miễn phí cho mục đích sử dụng cá nhân**. Để duy trì chi phí phát triển, khi bạn nhấn nút "Gửi" để bắt đầu tải truyện, công cụ sẽ tự động nhảy sang một tab quảng cáo mới (tab này sẽ tự động đóng lại sau 60 giây). Rất mong sự thông cảm và ủng hộ từ các bạn!
 
