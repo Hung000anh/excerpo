@@ -54,6 +54,10 @@
     "https://*.syosetu.org/*",
     "https://www.xbiquge.com/*",
     "https://xbiquge.com/*",
+    "https://www.xbiquge.info/*",
+    "https://xbiquge.info/*",
+    "http://www.xbiquge.info/*",
+    "http://xbiquge.info/*",
     "https://www.23qb.net/*",
     "https://23qb.net/*",
     "https://www.shubaow.org/*",
@@ -147,7 +151,11 @@
     {
       "matches": [
         "https://www.xbiquge.com/*",
-        "https://xbiquge.com/*"
+        "https://xbiquge.com/*",
+        "https://www.xbiquge.info/*",
+        "https://xbiquge.info/*",
+        "http://www.xbiquge.info/*",
+        "http://xbiquge.info/*"
       ],
       "js": [
         "scripts/xbiquge-content.js"

@@ -101,7 +101,7 @@ const SourceScribbleHub = {
 
       chapters.sort((a, b) => {
         if (a.order != null && b.order != null) {
-          return b.order - a.order;
+          return a.order - b.order;
         }
         if (a.chapter_number != null && b.chapter_number != null) {
           return a.chapter_number - b.chapter_number;

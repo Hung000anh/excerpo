@@ -8,6 +8,10 @@
 [![OS](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
 [![License](https://img.shields.io/badge/license-Personal%20Use-red.svg)](#)
 
+---
+[Tiếng Việt](README.md) | [English](README_EN.md) | [简体中文](README_ZH.md)
+---
+
 </div>
 
 ## 🌟 Giới thiệu
