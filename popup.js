@@ -8,6 +8,67 @@ function getSource(url) {
   return SOURCES.find(s => s.pattern.test(url)) || null;
 }
 
+
+let currentLang = "vi";
+
+function applyLanguage(lang) {
+  currentLang = lang;
+
+  // Update language toggle flag image and label
+  const langFlagImg = document.getElementById("langFlagImg");
+  const langName = document.getElementById("langName");
+  const langToggle = document.getElementById("langToggle");
+  if (langFlagImg) {
+    if (lang === "vi") langFlagImg.src = "https://flagcdn.com/w20/vn.png";
+    else if (lang === "en") langFlagImg.src = "https://flagcdn.com/w20/gb.png";
+    else if (lang === "zh") langFlagImg.src = "https://flagcdn.com/w20/cn.png";
+  }
+  if (langName) langName.textContent = lang.toUpperCase();
+  if (langToggle) {
+    langToggle.title = TRANSLATIONS[lang].langToggleTitle;
+    langToggle.dataset.i18nTitle = "langToggleTitle";
+  }
+
+  // Translate static elements in DOM
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key] !== undefined) {
+      el.innerHTML = TRANSLATIONS[lang][key];
+    }
+  });
+
+  document.querySelectorAll("[data-i18n-title]").forEach(el => {
+    const key = el.dataset.i18nTitle;
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key] !== undefined) {
+      el.title = TRANSLATIONS[lang][key];
+    }
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key] !== undefined) {
+      el.placeholder = TRANSLATIONS[lang][key];
+    }
+  });
+
+  // Update select options
+  document.querySelectorAll("select option[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key] !== undefined) {
+      el.textContent = TRANSLATIONS[lang][key];
+    }
+  });
+
+  // Re-run dynamic rendering to apply correct translations
+  restoreState();
+
+  chrome.runtime.sendMessage({ type: "GET_TASK_STATUS" }, (task) => {
+    if (task) {
+      renderBackgroundProgress(task);
+    }
+  });
+}
+
 // ─── UI Helpers ──────────────────────────────────────────
 const dom = {
   urlInput: document.getElementById("urlInput"),
@@ -19,7 +80,34 @@ const dom = {
 
 // ─── Initialization ──────────────────────────────────────
 async function init() {
-  await restoreState();
+  const data = await chrome.storage.local.get("language");
+  const savedLang = data.language || "vi";
+
+  // Set up language toggle & menu listeners
+  const langToggle = document.getElementById("langToggle");
+  const langMenu = document.getElementById("langMenu");
+  if (langToggle && langMenu) {
+    langToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      langMenu.classList.toggle("show");
+    });
+
+    document.addEventListener("click", () => {
+      langMenu.classList.remove("show");
+    });
+
+    document.querySelectorAll(".lang-option").forEach(opt => {
+      opt.addEventListener("click", async () => {
+        const nextLang = opt.dataset.value;
+        await chrome.storage.local.set({ language: nextLang });
+        applyLanguage(nextLang);
+        langMenu.classList.remove("show");
+      });
+    });
+  }
+
+  applyLanguage(savedLang);
+
   startMonitoringBackground();
   setupEventListeners();
   showRandomMeme();
@@ -47,36 +135,38 @@ function renderBackgroundProgress(task) {
   const btnStop = document.getElementById("btnStopDownload");
   if (!queueList) return;
 
+  const t = TRANSLATIONS[currentLang];
+
   if (task.status === 'running' || task.status === 'stopping') {
     btnStop.style.display = "block";
-    btnStop.textContent = task.status === 'stopping' ? "⏳ Đang dừng lại..." : "⏹ Dừng tải ngầm toàn bộ";
+    btnStop.textContent = task.status === 'stopping' ? t.btnStopDownloadStopping : t.btnStopDownload;
     btnStop.disabled = task.status === 'stopping';
 
     const btnAll = document.getElementById("btnDownloadAll");
     if (btnAll) {
-      btnAll.textContent = task.status === 'stopping' ? "⏳ Đang dừng công việc..." : "➕ Thêm các chương đã chọn vào hàng đợi";
+      btnAll.textContent = task.status === 'stopping' ? t.btnDownloadAllStopping : t.btnDownloadAllAddQueue;
       btnAll.disabled = task.status === 'stopping';
     }
 
     // Render Queue Items
     if (!task.queue || task.queue.length === 0) {
-      queueList.innerHTML = `<div style="text-align:center;color:#999;font-size:11px;margin-top:20px;">Đang khởi tạo hàng đợi...</div>`;
+      queueList.innerHTML = `<div style="text-align:center;color:#999;font-size:11px;margin-top:20px;">${t.queueInitializing}</div>`;
     } else {
       queueList.innerHTML = task.queue.map((q, idx) => {
         const pct = Math.round((q.done / Math.max(1, q.total)) * 100);
         let statusStr = "";
         let color = "#333";
         if (q.status === 'running') {
-          statusStr = "Đang tải...";
+          statusStr = t.statusRunning;
           color = "#1a73e8";
         } else if (q.status === 'pending') {
-          statusStr = "Chờ tải";
+          statusStr = t.statusPending;
           color = "#f4b400";
         } else if (q.status === 'completed') {
-          statusStr = "Hoàn tất";
+          statusStr = t.statusCompleted;
           color = "#0f9d58";
         } else if (q.status === 'cancelled') {
-          statusStr = "Đã hủy";
+          statusStr = t.statusCancelled;
           color = "#ea4335";
         }
 
@@ -86,7 +176,7 @@ function renderBackgroundProgress(task) {
             <div class="queue-item-info" style="flex:1;min-width:0;">
               <div class="queue-item-title" title="${q.bookName}">${q.bookName}</div>
               <div class="queue-item-status">
-                <span style="color:${color};font-weight:bold;">${statusStr}</span> • ${q.done}/${q.total} chương
+                <span style="color:${color};font-weight:bold;">${statusStr}</span> • ${q.done}/${q.total} ${t.chaptersUnit}
               </div>
               <div style="height:4px;background:#e0e0e0;border-radius:2px;overflow:hidden;margin-top:4px;">
                 <div style="height:100%;width:${pct}%;background:${color};transition:width 0.3s;border-radius:2px;"></div>
@@ -112,23 +202,16 @@ function renderBackgroundProgress(task) {
     const btnAll = document.getElementById("btnDownloadAll");
     if (btnAll) {
       btnAll.disabled = false;
-      btnAll.textContent = `⬇ Tải lại các chương đã chọn`;
+      btnAll.textContent = t.btnDownloadAllRetry;
     }
-    queueList.innerHTML = `<div style="text-align:center;color:#999;font-size:11px;margin-top:20px;">Hàng đợi trống</div>`;
+    queueList.innerHTML = `<div style="text-align:center;color:#999;font-size:11px;margin-top:20px;">${t.queueEmpty}</div>`;
   }
 }
 
 // Re-implement renderProgressBar locally since utils.js is not an ESM (or we can import it if we make it one)
-// But for small things, duplication is fine or we use classic script tags.
-function renderProgressBar(pct) {
-  return `
-    <div style="height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden;margin-top:4px;">
-      <div style="height:100%;width:${pct}%;background:#1a73e8;transition:width 0.3s;border-radius:3px;"></div>
-    </div>`;
-}
-
-// ─── Rendering Logic ──────────────────────────────────────
+// But for small// ─── Rendering Logic ──────────────────────────────────────
 function renderPreview(d, source, url, tabId, resultDiv) {
+  const t = TRANSLATIONS[currentLang];
   resultDiv.innerHTML = `
     <div style="display:flex;gap:12px;margin-top:8px;">
       ${d.coverImage
@@ -136,17 +219,17 @@ function renderPreview(d, source, url, tabId, resultDiv) {
       : `<div style="width:80px;height:110px;background:#eee;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#999;">No cover</div>`
     }
       <div style="flex:1;min-width:0;">
-        <b style="font-size:14px;">${d.bookName || "Không rõ tên"}</b><br>
-        <span style="color:#666;font-size:12px;">✍️ ${d.authorName || "Không rõ tác giả"}</span><br>
+        <b style="font-size:14px;">${d.bookName || t.previewUnknownName}</b><br>
+        <span style="color:#666;font-size:12px;">✍️ ${d.authorName || t.previewUnknownAuthor}</span><br>
         <span style="color:#999;font-size:11px;">ID: ${d.sourceBookCode || "?"}</span><br>
         ${d.description ? `<p style="font-size:12px;margin-top:6px;color:#444;">${d.description}...</p>` : ""}
-        <a href="${d.url}" target="_blank" style="font-size:11px;">🔗 Xem trang gốc</a>
+        <a href="${d.url}" target="_blank" style="font-size:11px;">${t.previewViewSource}</a>
       </div>
     </div>
 
     <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
       <button id="btnChapters" style="padding:6px 12px;background:#1a73e8;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;">
-        📋 Lấy danh sách chapter
+        ${t.previewGetChapters}
       </button>
       <div id="chapterResult" style="margin-top:8px;width:100%;min-width:0;"></div>
     </div>
@@ -154,16 +237,18 @@ function renderPreview(d, source, url, tabId, resultDiv) {
 
   document.getElementById("btnChapters").addEventListener("click", async () => {
     const chapterDiv = document.getElementById("chapterResult");
-    chapterDiv.innerHTML = `<p style="font-size:12px;color:#666;">⏳ Đang lấy danh sách chapter...</p>`;
+    chapterDiv.innerHTML = `<p style="font-size:12px;color:#666;">${t.previewFetchingChapters}</p>`;
 
     try {
       let chapters = [];
       if (source.fetchChapters) {
         chapters = await source.fetchChapters(url, (msg) => {
           const count = chapters.length;
+          const formattedMsg = msg.replace("Đang lấy danh sách chương...", t.previewFetchingChapters)
+            .replace("Đang lấy", t.previewFetchingChapters);
           chapterDiv.innerHTML = `
-            <p style="font-size:12px;color:#666;">⏳ ${msg}</p>
-            <p style="font-size:11px;color:#1a73e8;margin-top:2px;">Tìm thấy: <b>${count}</b> chapters...</p>
+            <p style="font-size:12px;color:#666;">⏳ ${formattedMsg}</p>
+            <p style="font-size:11px;color:#1a73e8;margin-top:2px;">${t.previewFoundChapters.replace("{count}", count)}</p>
           `;
         });
       } else {
@@ -176,39 +261,41 @@ function renderPreview(d, source, url, tabId, resultDiv) {
       }
 
       if (!chapters.length) {
-        chapterDiv.innerHTML = `<p style="color:red;font-size:12px;">❌ Không tìm thấy chapter nào</p>`;
+        chapterDiv.innerHTML = `<p style="color:red;font-size:12px;">${t.previewNoChapters}</p>`;
         return;
       }
 
       await chrome.storage.local.set({ lastState: { url, preview: d, chapters, timestamp: Date.now() } });
       await renderChapters(source, chapters, d.bookName, chapterDiv, tabId, url);
     } catch (err) {
-      chapterDiv.innerHTML = `<p style="color:red;font-size:12px;">❌ Lỗi: ${err.message}</p>`;
+      let errMsg = err.message;
+      if (errMsg.includes("Timeout: danh sách chapter chưa render")) {
+        errMsg = t.timeoutChapters;
+      }
+      chapterDiv.innerHTML = `<p style="color:red;font-size:12px;">${t.previewError.replace("{message}", errMsg)}</p>`;
     }
   });
 }
 
 async function renderChapters(source, chapters, bookName, chapterDiv, tabId, url) {
+  const t = TRANSLATIONS[currentLang];
   const storage = await chrome.storage.local.get(["cachedFolder", "cachedFormat", "cachedConflictAction", "cachedSelectedChapters"]);
-  const defaultFolder = storage.cachedFolder || "Excerpo";
-  const defaultFormat = storage.cachedFormat || "docx";
-  const defaultConflict = storage.cachedConflictAction || "uniquify";
   const cacheObj = storage.cachedSelectedChapters;
   const useCache = cacheObj && cacheObj.url === url;
 
   chapterDiv.innerHTML = `
     <div style="margin:6px 0;background:#f5f5f5;padding:6px;border-radius:4px;border:1px solid #eee;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <p style="font-size:12px;color:#333;margin:0;"><b>${chapters.length} chapters</b></p>
+        <p style="font-size:12px;color:#333;margin:0;">${t.chaptersCount.replace("{count}", chapters.length)}</p>
         <div>
-          <button id="btnSelectAll" style="padding:2px 6px;font-size:10px;background:#e0e0e0;border:1px solid #ccc;border-radius:3px;cursor:pointer;color:#333;">Chọn tất cả</button>
-          <button id="btnDeselectAll" style="padding:2px 6px;font-size:10px;background:#e0e0e0;border:1px solid #ccc;border-radius:3px;cursor:pointer;color:#333;">Bỏ chọn tất cả</button>
+          <button id="btnSelectAll" style="padding:2px 6px;font-size:10px;background:#e0e0e0;border:1px solid #ccc;border-radius:3px;cursor:pointer;color:#333;">${t.btnSelectAll}</button>
+          <button id="btnDeselectAll" style="padding:2px 6px;font-size:10px;background:#e0e0e0;border:1px solid #ccc;border-radius:3px;cursor:pointer;color:#333;">${t.btnDeselectAll}</button>
         </div>
       </div>
       <div style="display:flex;gap:4px;align-items:center;">
-        <label style="font-size:10px;color:#666;white-space:nowrap;">Chọn nhanh:</label>
-        <input type="text" id="quickSelectInput" style="flex:1;padding:4px;font-size:11px;border:1px solid #ccc;border-radius:3px;" placeholder="vd: 1, 2, 5-10">
-        <button id="btnQuickSelect" style="padding:4px 8px;background:#1a73e8;color:white;border:none;border-radius:3px;cursor:pointer;font-size:10px;">Chọn</button>
+        <label style="font-size:10px;color:#666;white-space:nowrap;">${t.quickSelectLabel}</label>
+        <input type="text" id="quickSelectInput" style="flex:1;padding:4px;font-size:11px;border:1px solid #ccc;border-radius:3px;" placeholder="${t.quickSelectPlaceholder}">
+        <button id="btnQuickSelect" style="padding:4px 8px;background:#1a73e8;color:white;border:none;border-radius:3px;cursor:pointer;font-size:10px;">${t.btnQuickSelect}</button>
       </div>
     </div>
     <div style="max-height:300px;overflow-y:auto;overflow-x:hidden;width:100%;border:1px solid #eee;border-radius:4px;margin-top:6px;">
@@ -216,12 +303,17 @@ async function renderChapters(source, chapters, bookName, chapterDiv, tabId, url
     const isVip = c.type === "vip";
     const icon = isVip ? "🔒" : c.type === "unvip" ? "🔓" : "";
     const isChecked = useCache ? cacheObj.selected.includes(idx) : true;
+    let chapTitle = c.chapter_title;
+    if (chapTitle.startsWith("Chương ")) {
+      const num = chapTitle.replace("Chương ", "");
+      chapTitle = t.chapterTitleDefault.replace("{number}", num);
+    }
     return `
           <div style="font-size:11px;padding:4px 8px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:6px;width:100%;min-width:0;">
             <input type="checkbox" class="chap-checkbox" data-idx="${idx}" ${isChecked ? 'checked' : ''}>
             <span style="color:#999;min-width:30px;">#${c.chapter_number}</span>
             <a href="${c.chapter_url}" target="_blank" style="flex:1;min-width:0;word-break:break-word;color:#1a73e8;text-decoration:none;line-height:1.3;padding:2px 0;">
-              ${c.chapter_title}
+              ${chapTitle}
             </a>
             <span style="width:20px;text-align:center;flex-shrink:0;">${icon}</span>
           </div>
@@ -230,10 +322,10 @@ async function renderChapters(source, chapters, bookName, chapterDiv, tabId, url
     </div>
     <div style="margin-top:10px;background:#f5f5f5;padding:8px;border-radius:4px;border:1px solid #ddd;">
       <button id="btnDownloadAll" style="width:100%;padding:8px;background:#0f9d58;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold;">
-        ⬇ Tải các chương đã chọn (Chạy ngầm)
+        ${t.btnDownloadAll}
       </button>
       <div id="downloadProgress" style="margin-top:6px;font-size:11px;color:#666;min-height:16px;">
-        Cấu hình định dạng tải trong mục Cài đặt (⚙️).
+        ${t.downloadProgressDesc}
       </div>
     </div>
   `;
@@ -290,7 +382,7 @@ async function renderChapters(source, chapters, bookName, chapterDiv, tabId, url
     const filteredChapters = Array.from(checkboxes).map(cb => chapters[parseInt(cb.dataset.idx)]);
 
     if (filteredChapters.length === 0) {
-      alert("⚠️ Không có chương nào được chọn!");
+      alert(t.alertNoChaptersSelected);
       return;
     }
 
@@ -301,7 +393,7 @@ async function renderChapters(source, chapters, bookName, chapterDiv, tabId, url
     const nameFormat = storage.cachedFileNameFormat || "#{index}_{title}";
 
     btnAll.disabled = true;
-    btnAll.textContent = `⏳ Đang gửi ${filteredChapters.length} chương...`;
+    btnAll.textContent = t.sendingChapters.replace("{count}", filteredChapters.length);
 
     // Attach per-chapter metadata
     const enrichedChapters = filteredChapters.map(c => ({
@@ -320,16 +412,16 @@ async function renderChapters(source, chapters, bookName, chapterDiv, tabId, url
     }, (response) => {
       if (!response) {
         btnAll.disabled = false;
-        btnAll.textContent = "❌ Lỗi kết nối nền";
+        btnAll.textContent = t.errorBgConnection;
       } else {
-        btnAll.textContent = "🚀 Đã gửi! Đang tải nền...";
+        btnAll.textContent = t.successSentBg;
 
         // Removed automatic switch to queue tab to keep ad tab active
 
         // Re-enable button after 2 seconds so user can crawl another book and queue it
         setTimeout(() => {
           btnAll.disabled = false;
-          btnAll.textContent = "⬇ Tải các chương đã chọn (Chạy ngầm)";
+          btnAll.textContent = t.btnDownloadAll;
         }, 2000);
       }
     });
@@ -509,15 +601,15 @@ function setupEventListeners() {
     if (!url) return;
 
     const source = getSource(url);
-    if (!source) { alert("URL không hợp lệ"); return; }
+    if (!source) { alert(TRANSLATIONS[currentLang].invalidUrl); return; }
 
-    dom.result.innerHTML = `<p>⏳ Đang mở trang...</p>`;
+    dom.result.innerHTML = `<p>${TRANSLATIONS[currentLang].openingPage}</p>`;
     const tab = await chrome.tabs.create({ url, active: false });
 
     // Polling for DOM readiness instead of waiting for complete load
     let d = null;
     let html = "";
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 60; i++) {
       try {
         const [{ result: currentHtml }] = await chrome.scripting.executeScript({
           target: { tabId: tab.id },
@@ -592,17 +684,17 @@ function setupEventListeners() {
       let expanded = false;
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.textContent = `Xem thêm (${spans.length - limit})`;
+      btn.textContent = `${TRANSLATIONS[currentLang].xemThem.replace("{count}", spans.length - limit)}`;
       btn.style.cssText = 'display:block;margin-top:8px;padding:2px 6px;font-size:11px;color:#000;background:#fafafa;border:1px solid #ccc;border-radius:4px;cursor:pointer;';
 
       btn.addEventListener('click', () => {
         expanded = !expanded;
         if (expanded) {
           spans.forEach(s => s.style.display = 'inline-block');
-          btn.textContent = 'Thu gọn';
+          btn.textContent = TRANSLATIONS[currentLang].thuGon;
         } else {
           spans.forEach((s, idx) => { s.style.display = (idx >= limit) ? 'none' : 'inline-block'; });
-          btn.textContent = `Xem thêm (${spans.length - limit})`;
+          btn.textContent = `${TRANSLATIONS[currentLang].xemThem.replace("{count}", spans.length - limit)}`;
         }
       });
 
@@ -686,7 +778,7 @@ function setupEventListeners() {
   if (btnStop) {
     btnStop.addEventListener("click", () => {
       btnStop.disabled = true;
-      btnStop.textContent = "⏳ Đang dừng lại...";
+      btnStop.textContent = TRANSLATIONS[currentLang].btnStopDownloadStopping;
       chrome.runtime.sendMessage({ type: 'STOP_BATCH_DOWNLOAD' });
     });
   }
