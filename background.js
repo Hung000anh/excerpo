@@ -39,6 +39,10 @@ let activeBatchTask = null;
 let storageInitResolve;
 let storageInitPromise = new Promise(r => storageInitResolve = r);
 
+chrome.action.onClicked.addListener(() => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("popup.html") });
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'KEEPALIVE_PING') {
     sendResponse({ alive: true });
