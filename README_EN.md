@@ -98,6 +98,7 @@ Sincere thanks for the contributions and support from you to help the project co
 | Donor Name | Amount | Date of Donation |
 | :--- | :---: | :---: |
 | Nguyễn Thị H*** G**** | 100,000 VND | 24/07/2026 03:27:00 |
+| Huỳnh T**** | 50,000 VND | 24/07/2026 16:48:01 |
 
 ## ⚖️ Terms & Disclaimer
 Excerpo is provided **for free for personal use**. To sustain development costs, when you click the "Submit" button to start downloading, the tool will automatically open a hidden ad tab under the background (which automatically closes after a few seconds). Thank you for your support and understanding!
