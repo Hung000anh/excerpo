@@ -18,16 +18,10 @@ const SourceUukanshu = {
 
   // ── Chapters config ────────────────────────────────────────────────────────
   chapters: {
-    method: "fetch",
+    method: "tab",
     listUrl: (url) => url,
-    fetchOptions: {
-      headers: {
-        "Accept": "text/html,application/xhtml+xml",
-        "Accept-Language": "zh-CN,zh;q=0.9",
-        "Referer": "https://uukanshu.cc/",
-      }
-    },
-    extract: (doc, url) => {
+    readySelector: "#list-chapterAll dd a, .chapter-list a, #chapterList a",
+    extract: () => {
       const selectors = [
         "#list-chapterAll > div > dd > a",
         "#list-chapterAll dd a",
@@ -36,19 +30,19 @@ const SourceUukanshu = {
       ];
       let elements = [];
       for (const sel of selectors) {
-        elements = [...doc.querySelectorAll(sel)];
+        elements = [...document.querySelectorAll(sel)];
         if (elements.length > 0) break;
       }
       if (elements.length === 0) throw new Error("Không tìm thấy danh sách chương");
 
       return elements.map((el, i) => {
-        const href  = el.getAttribute("href");
+        const href  = el.href;
         const title = el.textContent.trim();
         if (!href) return null;
         return {
           chapter_number: i + 1,
           chapter_title:  title || `Chapter ${i + 1}`,
-          chapter_url:    href.startsWith("/") ? `https://uukanshu.cc${href}` : href,
+          chapter_url:    href,
           type: "normal"
         };
       }).filter(Boolean);
