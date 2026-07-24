@@ -92,6 +92,13 @@ To allow the tool to automatically save thousands of files without hanging your 
 
 4. **Manage Queue**: Track the progress of multithreaded downloads for each chapter in the **Queue** tab (📋). You can stop or cancel the job at any time.
 
+## 💖 Thanks to our Donors
+Sincere thanks for the contributions and support from you to help the project continue to develop!
+
+| Donor Name | Amount | Date of Donation |
+| :--- | :---: | :---: |
+| Nguyễn Thị H*** G**** | 100k | 24/07/2026 03:27:00 |
+
 ## ⚖️ Terms & Disclaimer
 Excerpo is provided **for free for personal use**. To sustain development costs, when you click the "Submit" button to start downloading, the tool will automatically open a hidden ad tab under the background (which automatically closes after a few seconds). Thank you for your support and understanding!
 

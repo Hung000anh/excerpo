@@ -93,6 +93,13 @@ Vì đây là phiên bản dành cho nhà phát triển, bạn có thể dễ d�
 
 
 
+## 💖 Cảm ơn những người ủng hộ (Donors)
+Chân thành cảm ơn những đóng góp và ủng hộ từ các bạn để dự án tiếp tục phát triển!
+
+| Tên người ủng hộ | Số tiền | Ngày ủng hộ |
+| :--- | :---: | :---: |
+| Nguyễn Thị H*** G**** | 100k | 24/07/2026 03:27:00 |
+
 ## ⚖️ Điều khoản & Miễn trừ trách nhiệm
 Excerpo được cung cấp **miễn phí cho mục đích sử dụng cá nhân**. Để duy trì chi phí phát triển, khi bạn nhấn nút "Gửi" để bắt đầu tải truyện, công cụ sẽ tự động nhảy sang một tab quảng cáo mới (tab này sẽ tự động đóng lại sau 60 giây). Rất mong sự thông cảm và ủng hộ từ các bạn!
 
