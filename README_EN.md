@@ -102,16 +102,9 @@ Sincere thanks for the contributions and support from you to help the project co
 
 ## 👨‍💻 Code Contributors
 We sincerely appreciate the amazing code contributions to improve this extension:
-<table>
-  <tr>
-    <td>
-      <a href="https://github.com/vincentng295" style="text-decoration: none;">
-        <img src="https://avatars.githubusercontent.com/u/151985750?v=4" width="30" style="border-radius: 50%; vertical-align: middle;" alt="vincentng295"/>
-        <b style="vertical-align: middle; margin-left: 4px;">@vincentng295</b>
-      </a>
-    </td>
-  </tr>
-</table>
+| Avatar | Name | GitHub |
+| :---: | :--- | :--- |
+| <img src="https://avatars.githubusercontent.com/u/151985750?v=4" width="30" style="border-radius: 50%;"> | HuskyDG | [@vincentng295](https://github.com/vincentng295) |
 
 ## ⚖️ Terms & Disclaimer
 Excerpo is provided **for free for personal use**. To sustain development costs, when you click the "Submit" button to start downloading, the tool will automatically open a hidden ad tab under the background (which automatically closes after a few seconds). Thank you for your support and understanding!
