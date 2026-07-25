@@ -113,10 +113,13 @@ async function parseChapters(url, config, progressCallback) {
 //
 // content config shape:
 //   readySelector  string   — background polls this selector before extracting
-//   type           string   — "paragraphs" | "text" | "spans" | "ocr"
-//   selector       string   — CSS selector for container (or all spans)
+//   type           string   — "paragraphs" | "text" | "spans" | "ocr" | "fetch"
+//   selector       string | { selector: string, attr: string }
+//                  — CSS selector for container (or all spans/nodes).
 //   scriptUrl      string?  — (ocr) URL of html2canvas
 //   fallbacks      Array?   — [{ type, selector }, ...] tried in order if main fails
+//
+//   note: type "fetch" is not complete now, do not use it!
 
 /**
  * Generic content extractor — injects logic into an already-open tab.
@@ -132,18 +135,42 @@ async function parseContentInTab(tabId, contentConfig) {
     scriptUrl = null,
     remove    = [],
     lineFilter = null,
+    urlPattern   = null,
+    urlTemplate  = null,
+    dataField    = 'data',
+    fetchOptions = null,
+    swapText = null,
   } = contentConfig;
+
+  // selector
+  const isSelectorObj = selector && typeof selector === 'object';
+  const selectorStr   = isSelectorObj ? (selector.selector ?? 'body') : selector;
+  const selectorAttr  = isSelectorObj ? (selector.attr ?? null) : null;
 
   const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId },
     world:  "MAIN",
-    args:   [selector, type, scriptUrl, JSON.stringify(fallbacks), JSON.stringify(remove), lineFilter],
-    func: async (selector, type, scriptUrl, fallbacksJson, removeJson, lineFilterPattern) => {
+    args:   [
+      selectorStr, type, scriptUrl, JSON.stringify(fallbacks), JSON.stringify(remove), lineFilter,
+      urlPattern, urlTemplate, dataField, JSON.stringify(fetchOptions), selectorAttr, swapText
+    ],
+    func: async (selector, type, scriptUrl, fallbacksJson, removeJson, lineFilterPattern,
+                 fetchUrlPattern, fetchUrlTemplate, fetchDataField, fetchOptionsJson, selectorAttr, swapText) => {
       const fallbacks = JSON.parse(fallbacksJson);
       const removeArr = JSON.parse(removeJson);
       const lineFilterRe = lineFilterPattern ? new RegExp(lineFilterPattern) : null;
       const filterLine = (s) => s.length > 0 && (!lineFilterRe || !lineFilterRe.test(s));
-      const debug = [`url: ${location.href}`, `type: ${type}`, `selector: ${selector}`];
+      const debug = [`url: ${location.href}`, `type: ${type}`, `selector: ${selector}`, `selectorAttr: ${selectorAttr}`];
+
+      function linesFromNode(node) {
+        if (selectorAttr) {
+          const raw = node.getAttribute(selectorAttr);
+          return raw && raw.trim().length > 0 ? [raw.trim()] : [];
+        }
+        const clone = node.cloneNode(true);
+        clone.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
+        return clone.innerText.split("\n").map(s => s.trim()).filter(s => s.length > 0);
+      }
 
       // ── Extract helpers ──────────────────────────────────────────────────
       async function extract(sel, t) {
@@ -162,6 +189,71 @@ async function parseContentInTab(tabId, contentConfig) {
               .forEach(l => lines.push(l));
           });
           return { paragraphs: lines };
+        }
+
+        if (t === 'fetch') {
+          try {
+            if (!fetchUrlPattern || !fetchUrlTemplate) {
+              debug.push('[fetch] thiếu urlPattern hoặc urlTemplate trong config');
+              return null;
+            }
+            const re = new RegExp(fetchUrlPattern);
+            const m  = location.href.match(re);
+            if (!m) {
+              debug.push(`[fetch] urlPattern '${fetchUrlPattern}' không khớp với ${location.href}`);
+              return null;
+            }
+            let apiUrl = fetchUrlTemplate;
+            for (let gi = 1; gi < m.length; gi++) {
+              apiUrl = apiUrl.split(`{${gi}}`).join(encodeURIComponent(m[gi]));
+            }
+            debug.push(`[fetch] apiUrl: ${apiUrl}`);
+
+            const fetchOptions = JSON.parse(fetchOptionsJson || 'null') || {};
+            const resp = await fetch(apiUrl, Object.assign({
+              method: 'POST',
+              credentials: 'include',
+              mode: 'cors',
+              headers: { 'content-type': 'application/x-www-form-urlencoded' },
+              body: '',
+            }, fetchOptions));
+
+            if (!resp.ok) {
+              debug.push(`[fetch] HTTP ${resp.status}`);
+              return null;
+            }
+            const json = await resp.json();
+            const html = json?.[fetchDataField];
+            debug.push(`[fetch] code: ${json?.code}, có dữ liệu: ${!!html}`);
+            if (!html) return null;
+
+            const container = document.createElement('div');
+            container.innerHTML = html;
+
+            if (swapText) {
+              container.querySelectorAll(swapText.selector).forEach(we => {
+                we.innerText = we.getAttribute(swapText.attr);
+              });
+            }
+
+            const nodes = sel ? container.querySelectorAll(sel) : [container];
+            debug.push(sel? `[fetch] tìm thấy ${nodes.length} phần tử '${sel}' trong dữ liệu trả về` : `[fetch] Lấy toàn bộ văn bản`);
+
+            let lines = [];
+            if (nodes.length) {
+              nodes.forEach(node => linesFromNode(node).forEach(l => lines.push(l)));
+            } else if (!selectorAttr) {
+              // Không có attr riêng → fallback lấy toàn bộ container làm text thô
+              const clone = container.cloneNode(true);
+              clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+              lines = clone.textContent.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+            }
+
+            return { paragraphs: lines, chapterTitle: json.chaptername || null };
+          } catch (err) {
+            debug.push(`[fetch] Lỗi: ${err.message}`);
+            return null;
+          }
         }
 
         if (t === 'svg_text') {

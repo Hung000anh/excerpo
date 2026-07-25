@@ -3,7 +3,7 @@
  * Refactored to use background script for long-running tasks.
  */
 
-const SOURCES = [Source17k, Source22biqu, SourceUukanshu, SourceJjwxc, SourceQidian, SourceBiquge, Source52shuku, SourceFanqienovel, Source69shuba, SourceNovel543, SourceKakuyomu, SourceSyosetu, SourceRoyalRoad, SourceScribbleHub, SourceAo3, SourcePixiv, SourceIxdzs8, SourceBookQQ, SourceHetushu, SourceXbanxia, Source69shumi, SourceSyosetuOrg, SourceXbiquge, Source23qb, SourceShubaow, SourcePo18, SourceSto55, SourceSto9, SourceTwkan, SourceTtkan, SourceNovelLunar, SourceFictionPress, SourceFoxaholic, SourceShuhaige, SourcePowanjuan, SourceFenrirScans, SourceRanobelib, SourceCentralNovel, SourcePhoenixNovels, SourceIhuaben, SourceMeionovel, SourceNovelgo, SourceWbnovel, SourceChireads, SourceLnmtl];
+const SOURCES = [Source17k, Source22biqu, SourceUukanshu, SourceJjwxc, SourceQidian, SourceBiquge, Source52shuku, SourceFanqienovel, Source69shuba, SourceNovel543, SourceKakuyomu, SourceSyosetu, SourceRoyalRoad, SourceScribbleHub, SourceAo3, SourcePixiv, SourceIxdzs8, SourceBookQQ, SourceHetushu, SourceXbanxia, Source69shumi, SourceSyosetuOrg, SourceXbiquge, Source23qb, SourceShubaow, SourcePo18, SourceSto55, SourceSto9, SourceTwkan, SourceTtkan, SourceNovelLunar, SourceFictionPress, SourceFoxaholic, SourceShuhaige, SourcePowanjuan, SourceFenrirScans, SourceRanobelib, SourceCentralNovel, SourcePhoenixNovels, SourceIhuaben, SourceMeionovel, SourceNovelgo, SourceWbnovel, SourceChireads, SourceLnmtl, SourceSTV];
 function getSource(url) {
   return SOURCES.find(s => s.pattern.test(url)) || null;
 }
