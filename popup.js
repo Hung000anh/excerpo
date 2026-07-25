@@ -645,7 +645,7 @@ function setupEventListeners() {
             try {
               const _u = new URL(imgUrl);
               if (!['http:', 'https:'].includes(_u.protocol)) return null;
-              if (/^(localhost$|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(_u.hostname)) return null;
+              if (/^(localhost$|127\.\d+\.\d+\.\d+$|10\.\d+\.\d+\.\d+$|192\.168\.\d+\.\d+$|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$|0\.\d+\.\d+\.\d+$|169\.254\.\d+\.\d+$|\[::1\]$|\[::\]$|\[fe80:)/i.test(_u.hostname)) return null;
               const res = await fetch(imgUrl);
               const blob = await res.blob();
               return await new Promise(resolve => {
