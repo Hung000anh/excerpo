@@ -99,6 +99,19 @@
 | N*** T*** H*** G**** | 100,000 VND | 24/07/2026 03:27:00 |
 | H*** T**** | 50,000 VND | 24/07/2026 16:48:01 |
 
+## 👨‍💻 代码贡献者 (Contributors)
+衷心感谢对改进此扩展程序的代码贡献：
+<table>
+  <tr>
+    <td>
+      <a href="https://github.com/vincentng295" style="text-decoration: none;">
+        <img src="https://avatars.githubusercontent.com/u/151985750?v=4" width="30" style="border-radius: 50%; vertical-align: middle;" alt="vincentng295"/>
+        <b style="vertical-align: middle; margin-left: 4px;">@vincentng295</b>
+      </a>
+    </td>
+  </tr>
+</table>
+
 ## ⚖️ 条款与免责声明
 Excerpo **免费供个人使用**。为了维持开发成本，当您点击“提交”按钮开始下载时，该工具将自动在后台打开一个隐藏的广告标签页（并在几秒后自动关闭）。感谢您的支持和理解！
 

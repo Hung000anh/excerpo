@@ -101,6 +101,19 @@ Chân thành cảm ơn những đóng góp và ủng hộ từ các bạn để 
 | N*** T*** H*** G**** | 100,000 VNĐ | 24/07/2026 03:27:00 |
 | H*** T**** | 50,000 VNĐ | 24/07/2026 16:48:01 |
 
+## 👨‍💻 Người đóng góp mã nguồn (Contributors)
+Cảm ơn những đóng góp tuyệt vời từ cộng đồng để giúp công cụ ngày càng hoàn thiện hơn:
+<table>
+  <tr>
+    <td>
+      <a href="https://github.com/vincentng295" style="text-decoration: none;">
+        <img src="https://avatars.githubusercontent.com/u/151985750?v=4" width="30" style="border-radius: 50%; vertical-align: middle;" alt="vincentng295"/>
+        <b style="vertical-align: middle; margin-left: 4px;">@vincentng295</b>
+      </a>
+    </td>
+  </tr>
+</table>
+
 ## ⚖️ Điều khoản & Miễn trừ trách nhiệm
 Excerpo được cung cấp **miễn phí cho mục đích sử dụng cá nhân**. Để duy trì chi phí phát triển, khi bạn nhấn nút "Gửi" để bắt đầu tải truyện, công cụ sẽ tự động nhảy sang một tab quảng cáo mới (tab này sẽ tự động đóng lại sau 60 giây). Rất mong sự thông cảm và ủng hộ từ các bạn!
 
