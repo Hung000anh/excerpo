@@ -113,13 +113,10 @@ async function parseChapters(url, config, progressCallback) {
 //
 // content config shape:
 //   readySelector  string   — background polls this selector before extracting
-//   type           string   — "paragraphs" | "text" | "spans" | "ocr" | "fetch"
-//   selector       string | { selector: string, attr: string }
-//                  — CSS selector for container (or all spans/nodes).
+//   type           string   — "paragraphs" | "text" | "spans" | "ocr"
+//   selector       string   — CSS selector for container (or all spans)
 //   scriptUrl      string?  — (ocr) URL of html2canvas
 //   fallbacks      Array?   — [{ type, selector }, ...] tried in order if main fails
-//
-//   note: type "fetch" is not complete now, do not use it!
 
 /**
  * Generic content extractor — injects logic into an already-open tab.
@@ -135,42 +132,18 @@ async function parseContentInTab(tabId, contentConfig) {
     scriptUrl = null,
     remove    = [],
     lineFilter = null,
-    urlPattern   = null,
-    urlTemplate  = null,
-    dataField    = 'data',
-    fetchOptions = null,
-    swapText = null,
   } = contentConfig;
-
-  // selector
-  const isSelectorObj = selector && typeof selector === 'object';
-  const selectorStr   = isSelectorObj ? (selector.selector ?? 'body') : selector;
-  const selectorAttr  = isSelectorObj ? (selector.attr ?? null) : null;
 
   const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId },
     world:  "MAIN",
-    args:   [
-      selectorStr, type, scriptUrl, JSON.stringify(fallbacks), JSON.stringify(remove), lineFilter,
-      urlPattern, urlTemplate, dataField, JSON.stringify(fetchOptions), selectorAttr, swapText
-    ],
-    func: async (selector, type, scriptUrl, fallbacksJson, removeJson, lineFilterPattern,
-                 fetchUrlPattern, fetchUrlTemplate, fetchDataField, fetchOptionsJson, selectorAttr, swapText) => {
+    args:   [selector, type, scriptUrl, JSON.stringify(fallbacks), JSON.stringify(remove), lineFilter],
+    func: async (selector, type, scriptUrl, fallbacksJson, removeJson, lineFilterPattern) => {
       const fallbacks = JSON.parse(fallbacksJson);
       const removeArr = JSON.parse(removeJson);
       const lineFilterRe = lineFilterPattern ? new RegExp(lineFilterPattern) : null;
       const filterLine = (s) => s.length > 0 && (!lineFilterRe || !lineFilterRe.test(s));
-      const debug = [`url: ${location.href}`, `type: ${type}`, `selector: ${selector}`, `selectorAttr: ${selectorAttr}`];
-
-      function linesFromNode(node) {
-        if (selectorAttr) {
-          const raw = node.getAttribute(selectorAttr);
-          return raw && raw.trim().length > 0 ? [raw.trim()] : [];
-        }
-        const clone = node.cloneNode(true);
-        clone.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
-        return clone.innerText.split("\n").map(s => s.trim()).filter(s => s.length > 0);
-      }
+      const debug = [`url: ${location.href}`, `type: ${type}`, `selector: ${selector}`];
 
       // ── Extract helpers ──────────────────────────────────────────────────
       async function extract(sel, t) {
@@ -189,71 +162,6 @@ async function parseContentInTab(tabId, contentConfig) {
               .forEach(l => lines.push(l));
           });
           return { paragraphs: lines };
-        }
-
-        if (t === 'fetch') {
-          try {
-            if (!fetchUrlPattern || !fetchUrlTemplate) {
-              debug.push('[fetch] thiếu urlPattern hoặc urlTemplate trong config');
-              return null;
-            }
-            const re = new RegExp(fetchUrlPattern);
-            const m  = location.href.match(re);
-            if (!m) {
-              debug.push(`[fetch] urlPattern '${fetchUrlPattern}' không khớp với ${location.href}`);
-              return null;
-            }
-            let apiUrl = fetchUrlTemplate;
-            for (let gi = 1; gi < m.length; gi++) {
-              apiUrl = apiUrl.split(`{${gi}}`).join(encodeURIComponent(m[gi]));
-            }
-            debug.push(`[fetch] apiUrl: ${apiUrl}`);
-
-            const fetchOptions = JSON.parse(fetchOptionsJson || 'null') || {};
-            const resp = await fetch(apiUrl, Object.assign({
-              method: 'POST',
-              credentials: 'include',
-              mode: 'cors',
-              headers: { 'content-type': 'application/x-www-form-urlencoded' },
-              body: '',
-            }, fetchOptions));
-
-            if (!resp.ok) {
-              debug.push(`[fetch] HTTP ${resp.status}`);
-              return null;
-            }
-            const json = await resp.json();
-            const html = json?.[fetchDataField];
-            debug.push(`[fetch] code: ${json?.code}, có dữ liệu: ${!!html}`);
-            if (!html) return null;
-
-            const container = document.createElement('div');
-            container.innerHTML = html;
-
-            if (swapText) {
-              container.querySelectorAll(swapText.selector).forEach(we => {
-                we.innerText = we.getAttribute(swapText.attr);
-              });
-            }
-
-            const nodes = sel ? container.querySelectorAll(sel) : [container];
-            debug.push(sel? `[fetch] tìm thấy ${nodes.length} phần tử '${sel}' trong dữ liệu trả về` : `[fetch] Lấy toàn bộ văn bản`);
-
-            let lines = [];
-            if (nodes.length) {
-              nodes.forEach(node => linesFromNode(node).forEach(l => lines.push(l)));
-            } else if (!selectorAttr) {
-              // Không có attr riêng → fallback lấy toàn bộ container làm text thô
-              const clone = container.cloneNode(true);
-              clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
-              lines = clone.textContent.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-            }
-
-            return { paragraphs: lines, chapterTitle: json.chaptername || null };
-          } catch (err) {
-            debug.push(`[fetch] Lỗi: ${err.message}`);
-            return null;
-          }
         }
 
         if (t === 'svg_text') {
@@ -405,6 +313,85 @@ async function parseContentInTab(tabId, contentConfig) {
           } catch (err) {
             debug.push(`Lỗi tải API Custom: ${err.message}`);
             return null;
+          }
+        }
+
+        if (t === 'stv') {
+          const match = location.href.match(/\/truyen\/([^\/]+)\/\d+\/(\d+)\/(\d+)/);
+          let h = "", bookid = "", c = "";
+          if (match) {
+            h = match[1];
+            bookid = match[2];
+            c = match[3];
+          } else {
+            const urlObj = new URL(location.href);
+            bookid = urlObj.searchParams.get("bookid") || "";
+            h = urlObj.searchParams.get("h") || "";
+            c = urlObj.searchParams.get("c") || "";
+          }
+
+          if (!bookid || !c) {
+            debug.push(`[stv] Không thể parse bookid/c từ URL: ${location.href}`);
+            const container = document.querySelector("#content-container, #chaptercontainer, .chapter-content, div[id^='cld-']");
+            if (container) {
+              const clone = container.cloneNode(true);
+              clone.querySelectorAll("script, style, iframe, span[style*='gray'], .watermark, .ad").forEach(e => e.remove());
+              const ps = [...clone.querySelectorAll("p")].map(p => p.textContent.trim()).filter(Boolean);
+              if (ps.length > 0) return { paragraphs: ps };
+            }
+            return { paragraphs: ["LỖI: Không xác định được ID chương từ URL: " + location.href] };
+          }
+
+          try {
+            const apiUrl = `${location.origin}/index.php?bookid=${bookid}&h=${h}&c=${c}&ngmar=readc&sajax=readchapter&sty=1&exts=`;
+            debug.push(`[stv] Fetching POST API: ${apiUrl}`);
+
+            const res = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+
+            if (!json || json.code !== "0" || !json.data) {
+              const msg = (json && json.msg) ? json.msg : "Chương VIP bị khóa hoặc chưa đăng nhập SangTacViet.";
+              debug.push(`[stv API Error] ${msg}`);
+              return { paragraphs: [`LỖI: ${msg}`] };
+            }
+
+            const parser = new DOMParser();
+            const docHtml = parser.parseFromString(json.data, 'text/html');
+
+            // Xóa watermark & thông báo rác
+            docHtml.querySelectorAll("script, style, iframe, span[style*='color:gray'], span[style*='font-size:12px'], span[style*='gray'], .watermark, .ad, .ads").forEach(el => el.remove());
+
+            // Thay thế thẻ i[t] bằng chữ Hán nguyên bản (thuộc tính t)
+            docHtml.querySelectorAll("i[t]").forEach(el => {
+              const rawText = el.getAttribute("t");
+              if (rawText !== null) {
+                el.replaceWith(document.createTextNode(rawText));
+              }
+            });
+
+            docHtml.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
+
+            const junkRegex = /@bạn đang đọc|bản lưu trong hệ thống|sangtacviet|được dịch tại|truyện lưu tại/i;
+            const lines = docHtml.body.textContent.split("\n")
+              .map(s => {
+                let clean = s.trim();
+                // Lọc bỏ khoảng trắng giữa các chữ Hán
+                clean = clean.replace(/([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])\s+([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])/g, '$1$2');
+                clean = clean.replace(/([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])\s+([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])/g, '$1$2');
+                return clean;
+              })
+              .filter(s => s.length > 0 && !junkRegex.test(s));
+
+            debug.push(`[stv] Trích xuất thành công ${lines.length} đoạn văn bản RAW (tiếng Trung).`);
+            return { paragraphs: lines };
+          } catch (err) {
+            debug.push(`[stv API Exception] ${err.message}`);
+            return { paragraphs: [`LỖI: Tải nội dung thất bại - ${err.message}`] };
           }
         }
 
