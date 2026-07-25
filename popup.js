@@ -643,6 +643,9 @@ function setupEventListeners() {
           args: [d.coverImage],
           func: async (imgUrl) => {
             try {
+              const _u = new URL(imgUrl);
+              if (!['http:', 'https:'].includes(_u.protocol)) return null;
+              if (/^(localhost$|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(_u.hostname)) return null;
               const res = await fetch(imgUrl);
               const blob = await res.blob();
               return await new Promise(resolve => {
