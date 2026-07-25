@@ -106,6 +106,8 @@ Cảm ơn những đóng góp tuyệt vời từ cộng đồng để giúp côn
 | Avatar | Tên | GitHub |
 | :---: | :--- | :--- |
 | <img src="https://avatars.githubusercontent.com/u/151985750?v=4" width="30" style="border-radius: 50%;"> | HuskyDG | [@vincentng295](https://github.com/vincentng295) |
+| <img src="https://avatars.githubusercontent.com/u/64477572?v=4" width="30" style="border-radius: 50%;"> | Trương Hải Anh Thắng | [@arata1592003](https://github.com/arata1592003) |
+| <img src="https://avatars.githubusercontent.com/u/667857?v=4" width="30" style="border-radius: 50%;"> | Anupam Mediratta | [@anupamme](https://github.com/anupamme) |
 
 ## ⚖️ Điều khoản & Miễn trừ trách nhiệm
 Excerpo được cung cấp **miễn phí cho mục đích sử dụng cá nhân**. Để duy trì chi phí phát triển, khi bạn nhấn nút "Gửi" để bắt đầu tải truyện, công cụ sẽ tự động nhảy sang một tab quảng cáo mới (tab này sẽ tự động đóng lại sau 60 giây). Rất mong sự thông cảm và ủng hộ từ các bạn!

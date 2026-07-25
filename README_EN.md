@@ -105,6 +105,8 @@ We sincerely appreciate the amazing code contributions to improve this extension
 | Avatar | Name | GitHub |
 | :---: | :--- | :--- |
 | <img src="https://avatars.githubusercontent.com/u/151985750?v=4" width="30" style="border-radius: 50%;"> | HuskyDG | [@vincentng295](https://github.com/vincentng295) |
+| <img src="https://avatars.githubusercontent.com/u/64477572?v=4" width="30" style="border-radius: 50%;"> | Trương Hải Anh Thắng | [@arata1592003](https://github.com/arata1592003) |
+| <img src="https://avatars.githubusercontent.com/u/667857?v=4" width="30" style="border-radius: 50%;"> | Anupam Mediratta | [@anupamme](https://github.com/anupamme) |
 
 ## ⚖️ Terms & Disclaimer
 Excerpo is provided **for free for personal use**. To sustain development costs, when you click the "Submit" button to start downloading, the tool will automatically open a hidden ad tab under the background (which automatically closes after a few seconds). Thank you for your support and understanding!
