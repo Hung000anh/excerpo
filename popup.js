@@ -3,7 +3,66 @@
  * Refactored to use background script for long-running tasks.
  */
 
-const SOURCES = [Source17k, Source22biqu, SourceUukanshu, SourceJjwxc, SourceQidian, SourceBiquge, Source52shuku, SourceFanqienovel, Source69shuba, SourceNovel543, SourceKakuyomu, SourceSyosetu, SourceRoyalRoad, SourceScribbleHub, SourceAo3, SourcePixiv, SourceIxdzs8, SourceBookQQ, SourceHetushu, SourceXbanxia, Source69shumi, SourceSyosetuOrg, SourceXbiquge, Source23qb, SourceShubaow, SourcePo18, SourceSto55, SourceSto9, SourceTwkan, SourceTtkan, SourceNovelLunar, SourceFictionPress, SourceFoxaholic, SourceShuhaige, SourcePowanjuan, SourceFenrirScans, SourceRanobelib, SourceCentralNovel, SourcePhoenixNovels, SourceIhuaben, SourceMeionovel, SourceNovelgo, SourceWbnovel, SourceChireads, SourceLnmtl];
+const SOURCES = [
+  // 🇨🇳 Trung Quốc (Giản thể)
+  Source17k,
+  Source22biqu,
+  SourceUukanshu,
+  SourceJjwxc,
+  SourceQidian,
+  SourceBiquge,
+  Source52shuku,
+  SourceFanqienovel,
+  Source69shuba,
+  SourceNovel543,
+  SourceIxdzs8,
+  SourceBookQQ,
+  SourceHetushu,
+  SourceXbanxia,
+  Source69shumi,
+  SourceXbiquge,
+  Source23qb,
+  SourceShubaow,
+  SourcePowanjuan,
+  SourceShuhaige,
+  // 🇹🇼 Đài Loan (Phồn thể)
+  SourcePo18,
+  SourceSto55,
+  SourceSto9,
+  SourceTwkan,
+  SourceTtkan,
+  // 🇯🇵 Nhật Bản
+  SourceKakuyomu,
+  SourceSyosetu,
+  SourceSyosetuOrg,
+  SourcePixiv,
+  // 🌍 Âu Mỹ / Toàn cầu
+  SourceRoyalRoad,
+  SourceScribbleHub,
+  SourceAo3,
+  SourceNovelLunar,
+  SourceFictionPress,
+  SourceFoxaholic,
+  SourceLnmtl,
+  SourceFreewebnovel,
+  SourceCardboardtranslation,
+  SourceNoveldex,
+  SourceNovelight,
+  // 🇹🇷 Thổ Nhĩ Kỳ
+  SourceFenrirScans,
+  // 🇷🇺 Nga
+  SourceRanobelib,
+  // 🇧🇷 Brazil
+  SourceCentralNovel,
+  SourcePhoenixNovels,
+  // 🇮🇩 Indonesia
+  SourceIhuaben,
+  SourceMeionovel,
+  SourceNovelgo,
+  SourceWbnovel,
+  // 🇫🇷 Pháp
+  SourceChireads,
+];
 function getSource(url) {
   return SOURCES.find(s => s.pattern.test(url)) || null;
 }

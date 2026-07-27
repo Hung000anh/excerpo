@@ -1,8 +1,130 @@
 // background.js
 
-importScripts('docx.js', 'jszip.js', 'sources/17k.js', 'sources/22biqu.js', 'sources/uukanshu.js', 'sources/jjwxc.js', 'sources/qidian.js', 'sources/biquge.js', 'sources/52shuku.js', 'sources/fanqienovel.js', 'sources/69shuba.js', 'sources/novel543.js', 'sources/kakuyomu.js', 'sources/syosetu.js', 'sources/royalroad.js', 'sources/scribblehub.js', 'sources/ao3.js', 'sources/pixiv.js', 'sources/ixdzs8.js', 'sources/bookqq.js', 'sources/hetushu.js', 'sources/xbanxia.js', 'sources/69shumi.js', 'sources/syosetu_org.js', 'sources/xbiquge.js', 'sources/23qb.js', 'sources/shubaow.js', 'sources/po18.js', 'sources/sto55.js', 'sources/sto9.js', 'sources/twkan.js', 'sources/ttkan.js', 'sources/novellunar.js', 'sources/fictionpress.js', 'sources/foxaholic.js', 'sources/shuhaige.js', 'sources/powanjuan.js', 'sources/fenrirscans.js', 'sources/ranobelib.js', 'sources/centralnovel.js', 'sources/phoenixnovels.js', 'sources/ihuaben.js', 'sources/meionovel.js', 'sources/novelgo.js', 'sources/wbnovel.js', 'sources/chireads.js', 'sources/lnmtl.js', 'scripts/source-utils.js');
+importScripts(
+  'docx.js',
+  'jszip.js',
+  // 🇨🇳 Trung Quốc (Giản thể)
+  'sources/17k.js',
+  'sources/22biqu.js',
+  'sources/uukanshu.js',
+  'sources/jjwxc.js',
+  'sources/qidian.js',
+  'sources/biquge.js',
+  'sources/52shuku.js',
+  'sources/fanqienovel.js',
+  'sources/69shuba.js',
+  'sources/novel543.js',
+  'sources/ixdzs8.js',
+  'sources/bookqq.js',
+  'sources/hetushu.js',
+  'sources/xbanxia.js',
+  'sources/69shumi.js',
+  'sources/xbiquge.js',
+  'sources/23qb.js',
+  'sources/shubaow.js',
+  'sources/powanjuan.js',
+  'sources/shuhaige.js',
+  // 🇹🇼 Đài Loan (Phồn thể)
+  'sources/po18.js',
+  'sources/sto55.js',
+  'sources/sto9.js',
+  'sources/twkan.js',
+  'sources/ttkan.js',
+  // 🇯🇵 Nhật Bản
+  'sources/kakuyomu.js',
+  'sources/syosetu.js',
+  'sources/syosetu_org.js',
+  'sources/pixiv.js',
+  // 🌍 Âu Mỹ / Toàn cầu
+  'sources/royalroad.js',
+  'sources/scribblehub.js',
+  'sources/ao3.js',
+  'sources/novellunar.js',
+  'sources/fictionpress.js',
+  'sources/foxaholic.js',
+  'sources/lnmtl.js',
+  'sources/freewebnovel.js',
+  'sources/cardboardtranslation.js',
+  'sources/noveldex.js',
+  'sources/novelight.js',
+  // 🇹🇷 Thổ Nhĩ Kỳ
+  'sources/fenrirscans.js',
+  // 🇷🇺 Nga
+  'sources/ranobelib.js',
+  // 🇧🇷 Brazil
+  'sources/centralnovel.js',
+  'sources/phoenixnovels.js',
+  // 🇮🇩 Indonesia
+  'sources/ihuaben.js',
+  'sources/meionovel.js',
+  'sources/novelgo.js',
+  'sources/wbnovel.js',
+  // 🇫🇷 Pháp
+  'sources/chireads.js',
+  // Utils
+  'scripts/source-utils.js',
+);
 
-const SOURCES = [Source17k, Source22biqu, SourceUukanshu, SourceJjwxc, SourceQidian, SourceBiquge, Source52shuku, SourceFanqienovel, Source69shuba, SourceNovel543, SourceKakuyomu, SourceSyosetu, SourceRoyalRoad, SourceScribbleHub, SourceAo3, SourcePixiv, SourceIxdzs8, SourceBookQQ, SourceHetushu, SourceXbanxia, Source69shumi, SourceSyosetuOrg, SourceXbiquge, Source23qb, SourceShubaow, SourcePo18, SourceSto55, SourceSto9, SourceTwkan, SourceTtkan, SourceNovelLunar, SourceFictionPress, SourceFoxaholic, SourceShuhaige, SourcePowanjuan, SourceFenrirScans, SourceRanobelib, SourceCentralNovel, SourcePhoenixNovels, SourceIhuaben, SourceMeionovel, SourceNovelgo, SourceWbnovel, SourceChireads, SourceLnmtl];
+const SOURCES = [
+  // 🇨🇳 Trung Quốc (Giản thể)
+  Source17k,
+  Source22biqu,
+  SourceUukanshu,
+  SourceJjwxc,
+  SourceQidian,
+  SourceBiquge,
+  Source52shuku,
+  SourceFanqienovel,
+  Source69shuba,
+  SourceNovel543,
+  SourceIxdzs8,
+  SourceBookQQ,
+  SourceHetushu,
+  SourceXbanxia,
+  Source69shumi,
+  SourceXbiquge,
+  Source23qb,
+  SourceShubaow,
+  SourcePowanjuan,
+  SourceShuhaige,
+  // 🇹🇼 Đài Loan (Phồn thể)
+  SourcePo18,
+  SourceSto55,
+  SourceSto9,
+  SourceTwkan,
+  SourceTtkan,
+  // 🇯🇵 Nhật Bản
+  SourceKakuyomu,
+  SourceSyosetu,
+  SourceSyosetuOrg,
+  SourcePixiv,
+  // 🌍 Âu Mỹ / Toàn cầu
+  SourceRoyalRoad,
+  SourceScribbleHub,
+  SourceAo3,
+  SourceNovelLunar,
+  SourceFictionPress,
+  SourceFoxaholic,
+  SourceLnmtl,
+  SourceFreewebnovel,
+  SourceCardboardtranslation,
+  SourceNoveldex,
+  SourceNovelight,
+  // 🇹🇷 Thổ Nhĩ Kỳ
+  SourceFenrirScans,
+  // 🇷🇺 Nga
+  SourceRanobelib,
+  // 🇧🇷 Brazil
+  SourceCentralNovel,
+  SourcePhoenixNovels,
+  // 🇮🇩 Indonesia
+  SourceIhuaben,
+  SourceMeionovel,
+  SourceNovelgo,
+  SourceWbnovel,
+  // 🇫🇷 Pháp
+  SourceChireads,
+];
 function getSource(url) {
   return SOURCES.find(s => s.pattern.test(url)) || null;
 }
