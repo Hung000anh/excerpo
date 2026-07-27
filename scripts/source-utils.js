@@ -290,6 +290,20 @@ async function parseContentInTab(tabId, contentConfig) {
           debug.push(`[hetushu] sorted and extracted ${paragraphs.length} paragraphs`);
           return { paragraphs };
         }
+        if (t === 'noveldex') {
+          const blocks = Array.from(document.querySelectorAll('[data-paragraph-index]'));
+          if (blocks.length > 0) {
+            blocks.sort((a, b) => {
+              const ia = parseInt(a.getAttribute('data-paragraph-index'), 10) || 0;
+              const ib = parseInt(b.getAttribute('data-paragraph-index'), 10) || 0;
+              return ia - ib;
+            });
+            const paragraphs = blocks.map(b => b.querySelector('p')?.textContent?.trim() || b.textContent.trim()).filter(Boolean);
+            debug.push(`[noveldex] extracted ${paragraphs.length} sorted blocks`);
+            return { paragraphs };
+          }
+          return { paragraphs: [] };
+        }
 
         if (t === 'custom') {
           const idMatch = location.href.match(/id=(\d+)/);
