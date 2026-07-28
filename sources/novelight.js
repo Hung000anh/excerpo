@@ -149,4 +149,3 @@ const SourceNovelight = {
     return parseChapters(url, this.chapters, progressCb);
   }
 };
-(self.EXCERPO_SOURCES = self.EXCERPO_SOURCES || []).push(SourceNovelight);

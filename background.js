@@ -61,6 +61,8 @@ importScripts(
   'sources/wbnovel.js',
   // 🇫🇷 Pháp
   'sources/chireads.js',
+  // 🇹🇼 Đài Loan Mới
+  'sources/czbooks.js',
   // Utils
   'scripts/source-utils.js',
 );
@@ -124,6 +126,8 @@ const SOURCES = [
   SourceWbnovel,
   // 🇫🇷 Pháp
   SourceChireads,
+  // 🇹🇼 Đài Loan Mới
+  SourceCzbooks,
 ];
 function getSource(url) {
   return SOURCES.find(s => s.pattern.test(url)) || null;
