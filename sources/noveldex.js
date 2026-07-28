@@ -90,4 +90,3 @@ const SourceNoveldex = {
     return parseChapters(url, this.chapters, progressCb);
   }
 };
-(self.EXCERPO_SOURCES = self.EXCERPO_SOURCES || []).push(SourceNoveldex);

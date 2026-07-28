@@ -31,6 +31,7 @@ const SOURCES = [
   SourceSto9,
   SourceTwkan,
   SourceTtkan,
+  SourceCzbooks,
   // 🇯🇵 Nhật Bản
   SourceKakuyomu,
   SourceSyosetu,
@@ -752,10 +753,10 @@ function setupEventListeners() {
       btn.addEventListener('click', () => {
         expanded = !expanded;
         if (expanded) {
-          spans.forEach(s => s.style.display = 'inline-block');
+          spans.forEach(s => s.style.display = '');
           btn.textContent = TRANSLATIONS[currentLang].thuGon;
         } else {
-          spans.forEach((s, idx) => { s.style.display = (idx >= limit) ? 'none' : 'inline-block'; });
+          spans.forEach((s, idx) => { s.style.display = (idx >= limit) ? 'none' : ''; });
           btn.textContent = `${TRANSLATIONS[currentLang].xemThem.replace("{count}", spans.length - limit)}`;
         }
       });
