@@ -30,6 +30,7 @@ importScripts(
   'sources/sto9.js',
   'sources/twkan.js',
   'sources/ttkan.js',
+  'sources/69shubatw.js',
   // 🇯🇵 Nhật Bản
   'sources/kakuyomu.js',
   'sources/syosetu.js',
@@ -112,6 +113,7 @@ const SOURCES = [
   SourceCardboardtranslation,
   SourceNoveldex,
   SourceNovelight,
+  Source69shubatw,
   // 🇹🇷 Thổ Nhĩ Kỳ
   SourceFenrirScans,
   // 🇷🇺 Nga
