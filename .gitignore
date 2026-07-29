@@ -1,0 +1,15 @@
+# Claude Code
+.claude/*
+.claude/skills/add-source/SKILL.md
+!.claude/skills/
+!.claude/agents/
+!.claude/workflows/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+.vscode/
+.idea/
+CLAUDE.md

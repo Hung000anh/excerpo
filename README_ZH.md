@@ -32,7 +32,7 @@
 ## 🚀 核心功能
 * **多平台支持：** 支持扫描和流畅下载全球多个国家的小说网站：
   - <img src="https://flagcdn.com/w20/cn.png" width="16" alt="CN"> **中国（简体）：** `17k`, `22biqu`, `23qb`, `52shuku`, `69shuba`, `69shumi`, `biquge`, `xbiquge`, `bookqq`, `fanqienovel`, `hetushu`, `ihuaben`, `ixdzs8`, `jjwxc`, `novel543`, `powanjuan`, `qidian`, `shubaow`, `shuhaige`, `uukanshu`, `xbanxia`。
-  - <img src="https://flagcdn.com/w20/tw.png" width="16" alt="TW"> **中国台湾（繁体）：** `czbooks`, `po18`, `sto9`, `sto55`, `ttkan`, `twkan`。
+  - <img src="https://flagcdn.com/w20/tw.png" width="16" alt="TW"> **中国台湾（繁体）：** `69shuba.tw`, `czbooks`, `po18`, `sto9`, `sto55`, `ttkan`, `twkan`。
   - <img src="https://flagcdn.com/w20/jp.png" width="16" alt="JP"> **日本：** `kakuyomu`, `pixiv`, `syosetu`, `syosetu.org`。
   - <img src="https://flagcdn.com/w20/us.png" width="16" alt="US"> **欧美/全球：** `ao3`, `cardboardtranslation`, `fictionpress`, `foxaholic`, `freewebnovel`, `lnmtl`, `noveldex`, `novelight`, `novellunar`, `royalroad`, `scribblehub`。
   - <img src="https://flagcdn.com/w20/tr.png" width="16" alt="TR"> **土耳其：** `fenrirscans`。
