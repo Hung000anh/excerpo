@@ -318,7 +318,22 @@ async function parseContentInTab(tabId, contentConfig) {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if (data && data.body && data.body.content) {
-              const ps = data.body.content.split('\n').map(p => p.trim()).filter(Boolean);
+              const rawPs = data.body.content.split('\n').map(p => p.trim());
+              const ps = [];
+              for (let p of rawPs) {
+                if (!p) continue;
+                if (p === '[pagebreak]') {
+                  ps.push('　＊＊＊＊＊');
+                  continue;
+                }
+                p = p.replace(/\[chapter:(.*?)\]/g, '$1')
+                     .replace(/\[pixivimage:\d+(?:-\d+)?\]/g, '')
+                     .replace(/\[uploadedimage:\d+\]/g, '')
+                     .replace(/\[jump:\d+\]/g, '')
+                     .replace(/\[\[rb:([^>]+)\s*=>\s*([^\]]+)\]\]/g, '$1($2)')
+                     .trim();
+                if (p) ps.push(p);
+              }
               debug.push(`Custom API fetch success, extracted ${ps.length} paragraphs`);
               return { paragraphs: ps };
             } else {
