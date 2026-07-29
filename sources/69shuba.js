@@ -2,7 +2,7 @@ const Source69shuba = {
   name: "69shuba",
   maxWorkers: 1,
   downloadDelay: 2000,
-  pattern: /69shu(ba)?\.[a-z]+\/book/,
+  pattern: /69shu(ba)?\.com\/book/,
 
   // ── Preview config ─────────────────────────────────────────────────────────
   preview: {
