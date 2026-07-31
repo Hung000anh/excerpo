@@ -305,7 +305,7 @@ async function parseContentInTab(tabId, contentConfig) {
           return { paragraphs: [] };
         }
 
-        if (t === 'custom') {
+        if (t === 'pixiv' || t === 'custom') { // Keep custom for backward compatibility with pixiv
           const idMatch = location.href.match(/id=(\d+)/);
           if (!idMatch) {
             debug.push("Không thể lấy ID chương từ URL: " + location.href);
@@ -341,6 +341,38 @@ async function parseContentInTab(tabId, contentConfig) {
             }
           } catch (err) {
             debug.push(`Lỗi tải API Custom: ${err.message}`);
+            return null;
+          }
+        }
+
+        if (t === 'wattpad') {
+          const match = location.href.match(/(?:story\/|v4\/parts\/|\/)(\d+)-?/);
+          if (!match) {
+            debug.push("Không thể lấy ID chương Wattpad từ URL: " + location.href);
+            return null;
+          }
+          const id = match[1];
+          try {
+            const infoUrl = `https://www.wattpad.com/v4/parts/${id}?fields=id,title,pages,text_url&_=${Date.now()}`;
+            debug.push(`Fetching Wattpad info: ${infoUrl}`);
+            
+            const res = await fetch(infoUrl);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            const textUrl = data.text_url.text;
+            debug.push(`Fetching Wattpad text: ${textUrl}`);
+            const textRes = await fetch(textUrl);
+            let text = await textRes.text();
+            
+            // Xóa HTML tags và lấy nội dung các thẻ p
+            text = text.replace(/data-p-id="[a-f0-9]+"/g, "");
+            const doc = new DOMParser().parseFromString(text, 'text/html');
+            const ps = Array.from(doc.querySelectorAll("p")).map(p => p.textContent.trim()).filter(Boolean);
+            
+            debug.push(`Wattpad API fetch success, extracted ${ps.length} paragraphs`);
+            return { paragraphs: ps };
+          } catch (err) {
+            debug.push(`Lỗi tải API Wattpad: ${err.message}`);
             return null;
           }
         }
