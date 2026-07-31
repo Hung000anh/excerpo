@@ -50,6 +50,7 @@ const SOURCES = [
   SourceCardboardtranslation,
   SourceNoveldex,
   SourceNovelight,
+  SourceWattpad,
   // 🇹🇷 Thổ Nhĩ Kỳ
   SourceFenrirScans,
   // 🇷🇺 Nga

@@ -48,6 +48,7 @@ importScripts(
   'sources/cardboardtranslation.js',
   'sources/noveldex.js',
   'sources/novelight.js',
+  'sources/wattpad.js',
   // 🇹🇷 Thổ Nhĩ Kỳ
   'sources/fenrirscans.js',
   // 🇷🇺 Nga
@@ -113,6 +114,7 @@ const SOURCES = [
   SourceCardboardtranslation,
   SourceNoveldex,
   SourceNovelight,
+  SourceWattpad,
   Source69shubatw,
   // 🇹🇷 Thổ Nhĩ Kỳ
   SourceFenrirScans,
