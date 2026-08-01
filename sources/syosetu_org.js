@@ -32,15 +32,18 @@ const SourceSyosetuOrg = {
   // ── Chapters config ────────────────────────────────────────────────────────
   chapters: {
     method: "tab",
-    readySelector: "div#maind div.ss table tr td a",
+    readySelector: "div#maind div.ss table tr td a | .episode-list__item a.episode-list__link",
     extract: async () => {
       // Small delay just to be safe
       await new Promise(r => setTimeout(r, 500));
-      const elements = [...document.querySelectorAll("div#maind div.ss table tr td a")];
+      const elements = [...document.querySelectorAll("div#maind div.ss table tr td a, .episode-list__item a.episode-list__link")];
       return elements.map((el, idx) => {
+        // Giao diện mới có <span class="episode-list__title"> để chứa tiêu đề
+        const titleEl = el.querySelector('.episode-list__title');
+        const title = titleEl ? titleEl.textContent : el.textContent;
         return {
           chapter_number: idx + 1,
-          chapter_title:  el.textContent.replace(/\s+/g, ' ').trim(),
+          chapter_title:  title.replace(/\s+/g, ' ').trim(),
           chapter_url:    el.href, // in tab, el.href is absolute
           type:           "normal"
         };
