@@ -13,4 +13,4 @@ desktop.ini
 .vscode/
 .idea/
 CLAUDE.md
-.claude/skills/release/SKILL.md
+.claude/*
