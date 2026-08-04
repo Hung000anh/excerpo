@@ -7,6 +7,20 @@ and this project adheres to Semantic Versioning (`MAJOR.FEAT.FIX`).
 
 ---
 
+## [1.26.4] - 2026-08-04
+
+### Added
+- Add support for custom content extractor (`customExtract`) directly in modular source configuration files.
+
+### Changed
+- Decouple and encapsulate custom HTML scraping logic for Hetushu and Pixiv from `source-utils.js` into their respective source files.
+- Return Noveldex extractor to standard layout inside `source-utils.js` for robust performance.
+
+### Fixed
+- Improve Noveldex chapter content extraction, sanitizing hidden zero-width spaces, and filtering redundant UI comment elements.
+
+---
+
 ## [1.26.3] - 2026-08-03
 
 ### Added
