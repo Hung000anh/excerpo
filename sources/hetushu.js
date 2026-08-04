@@ -37,8 +37,31 @@ const SourceHetushu = {
   // ── Content config ─────────────────────────────────────────────────────────
   content: {
     readySelector: "#content",
-    type:          "hetushu",
-    selector:      "#content"
+    type:          "custom",
+    selector:      "#content",
+    customExtract: (sel) => {
+      const container = document.querySelector(sel);
+      if (!container) return null;
+      const divs = Array.from(container.children).filter(el => el.tagName === 'DIV');
+      if (!divs.length) return null;
+
+      const visibleDivs = divs.filter(d => {
+        const display = window.getComputedStyle(d).display;
+        return d.textContent.trim().length > 0 && display !== 'none';
+      });
+
+      visibleDivs.sort((a, b) => {
+        const rectA = a.getBoundingClientRect();
+        const rectB = b.getBoundingClientRect();
+        if (Math.abs(rectA.top - rectB.top) > 5) {
+          return rectA.top - rectB.top;
+        }
+        return rectA.left - rectB.left;
+      });
+
+      const paragraphs = visibleDivs.map(d => d.textContent.trim()).filter(Boolean);
+      return { paragraphs };
+    }
   },
 
   // ── Public API ─────────────────────────────────────────────────────────────

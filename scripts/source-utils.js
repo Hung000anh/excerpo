@@ -126,19 +126,22 @@ async function parseChapters(url, config, progressCallback) {
  */
 async function parseContentInTab(tabId, contentConfig) {
   const {
-    type      = 'paragraphs',
-    selector  = 'body',
-    fallbacks = [],
-    scriptUrl = null,
-    remove    = [],
-    lineFilter = null,
+    type          = 'paragraphs',
+    selector      = 'body',
+    fallbacks     = [],
+    scriptUrl     = null,
+    remove        = [],
+    lineFilter    = null,
+    customExtract = null,
   } = contentConfig;
+
+  const customExtractStr = typeof customExtract === 'function' ? customExtract.toString() : null;
 
   const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId },
     world:  "MAIN",
-    args:   [selector, type, scriptUrl, JSON.stringify(fallbacks), JSON.stringify(remove), lineFilter],
-    func: async (selector, type, scriptUrl, fallbacksJson, removeJson, lineFilterPattern) => {
+    args:   [selector, type, scriptUrl, JSON.stringify(fallbacks), JSON.stringify(remove), lineFilter, customExtractStr],
+    func: async (selector, type, scriptUrl, fallbacksJson, removeJson, lineFilterPattern, customExtractStr) => {
       const fallbacks = JSON.parse(fallbacksJson);
       const removeArr = JSON.parse(removeJson);
       const lineFilterRe = lineFilterPattern ? new RegExp(lineFilterPattern) : null;
@@ -147,6 +150,15 @@ async function parseContentInTab(tabId, contentConfig) {
 
       // ── Extract helpers ──────────────────────────────────────────────────
       async function extract(sel, t) {
+        if (customExtractStr) {
+          try {
+            const customFn = new Function(`return (${customExtractStr})`)();
+            const res = await customFn(sel, t, removeArr, lineFilterPattern);
+            if (res && Array.isArray(res.paragraphs) && res.paragraphs.length > 0) return res;
+          } catch (e) {
+            debug.push(`[customExtract error] ${e.message}`);
+          }
+        }
 
         if (t === 'spans') {
           // Every matched element is its own paragraph
@@ -265,31 +277,6 @@ async function parseContentInTab(tabId, contentConfig) {
           return { paragraphs: lines };
         }
 
-        if (t === 'hetushu') {
-          const divs = Array.from(container.children).filter(el => el.tagName === 'DIV');
-          debug.push(`[hetushu] found ${divs.length} direct divs`);
-          if (!divs.length) return null;
-
-          // Lọc các div chứa chữ và không bị ẩn
-          const visibleDivs = divs.filter(d => {
-            const display = window.getComputedStyle(d).display;
-            return d.textContent.trim().length > 0 && display !== 'none';
-          });
-
-          // Sắp xếp các div theo tọa độ hiển thị thực tế trên màn hình (đầu tiên là chiều dọc y, sau đó là x nếu xấp xỉ bằng nhau)
-          visibleDivs.sort((a, b) => {
-            const rectA = a.getBoundingClientRect();
-            const rectB = b.getBoundingClientRect();
-            if (Math.abs(rectA.top - rectB.top) > 5) {
-              return rectA.top - rectB.top;
-            }
-            return rectA.left - rectB.left;
-          });
-
-          const paragraphs = visibleDivs.map(d => d.textContent.trim()).filter(Boolean);
-          debug.push(`[hetushu] sorted and extracted ${paragraphs.length} paragraphs`);
-          return { paragraphs };
-        }
         if (t === 'noveldex') {
           const blocks = Array.from(document.querySelectorAll('[data-paragraph-index]'));
           if (blocks.length > 0) {
@@ -298,51 +285,16 @@ async function parseContentInTab(tabId, contentConfig) {
               const ib = parseInt(b.getAttribute('data-paragraph-index'), 10) || 0;
               return ia - ib;
             });
-            const paragraphs = blocks.map(b => b.querySelector('p')?.textContent?.trim() || b.textContent.trim()).filter(Boolean);
+            const paragraphs = blocks.map(b => {
+              const prose = b.querySelector('.prose') || b;
+              const clone = prose.cloneNode(true);
+              clone.querySelectorAll('script, style, button, svg, .not-prose').forEach(el => el.remove());
+              return clone.textContent.replace(/[​-‍﻿]/g, '').trim();
+            }).filter(s => s.length > 0);
             debug.push(`[noveldex] extracted ${paragraphs.length} sorted blocks`);
             return { paragraphs };
           }
-          return { paragraphs: [] };
-        }
-
-        if (t === 'custom') {
-          const idMatch = location.href.match(/id=(\d+)/);
-          if (!idMatch) {
-            debug.push("Không thể lấy ID chương từ URL: " + location.href);
-            return null;
-          }
-          const id = idMatch[1];
-          try {
-            debug.push(`Fetching custom API: https://www.pixiv.net/ajax/novel/${id}`);
-            const res = await fetch(`https://www.pixiv.net/ajax/novel/${id}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            if (data && data.body && data.body.content) {
-              const rawPs = data.body.content.split('\n').map(p => p.trim());
-              const ps = [];
-              for (let p of rawPs) {
-                if (!p) continue;
-                if (p === '[pagebreak]') {
-                  ps.push('　＊＊＊＊＊');
-                  continue;
-                }
-                p = p.replace(/\[chapter:(.*?)\]/g, '$1')
-                     .replace(/\[pixivimage:\d+(?:-\d+)?\]/g, '')
-                     .replace(/\[uploadedimage:\d+\]/g, '')
-                     .replace(/\[jump:\d+\]/g, '')
-                     .replace(/\[\[rb:([^>]+)\s*=>\s*([^\]]+)\]\]/g, '$1($2)')
-                     .trim();
-                if (p) ps.push(p);
-              }
-              debug.push(`Custom API fetch success, extracted ${ps.length} paragraphs`);
-              return { paragraphs: ps };
-            } else {
-              throw new Error("Không có nội dung body.content trong phản hồi API");
-            }
-          } catch (err) {
-            debug.push(`Lỗi tải API Custom: ${err.message}`);
-            return null;
-          }
+          return null;
         }
 
         if (t === 'ocr') {

@@ -199,7 +199,39 @@ const SourcePixiv = {
   content: {
     readySelector: "main",
     type:          "custom",
-    selector:      "body"
+    selector:      "body",
+    customExtract: async () => {
+      const idMatch = location.href.match(/id=(\d+)/);
+      if (!idMatch) return null;
+      const id = idMatch[1];
+      try {
+        const res = await fetch(`https://www.pixiv.net/ajax/novel/${id}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data && data.body && data.body.content) {
+          const rawPs = data.body.content.split('\n').map(p => p.trim());
+          const ps = [];
+          for (let p of rawPs) {
+            if (!p) continue;
+            if (p === '[pagebreak]') {
+              ps.push('　＊＊＊＊＊');
+              continue;
+            }
+            p = p.replace(/\[chapter:(.*?)\]/g, '$1')
+                 .replace(/\[pixivimage:\d+(?:-\d+)?\]/g, '')
+                 .replace(/\[uploadedimage:\d+\]/g, '')
+                 .replace(/\[jump:\d+\]/g, '')
+                 .replace(/\[\[rb:([^>]+)\s*=>\s*([^\]]+)\]\]/g, '$1($2)')
+                 .trim();
+            if (p) ps.push(p);
+          }
+          return { paragraphs: ps };
+        }
+        return null;
+      } catch (err) {
+        return null;
+      }
+    }
   },
 
   // ── Public API ─────────────────────────────────────────────────────────────
