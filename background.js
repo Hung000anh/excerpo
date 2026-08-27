@@ -34,6 +34,7 @@ importScripts(
   // 🇯🇵 Nhật Bản
   'sources/kakuyomu.js',
   'sources/syosetu.js',
+  'sources/syosetu_today.js',
   'sources/syosetu_org.js',
   'sources/pixiv.js',
   // 🌍 Âu Mỹ / Toàn cầu
@@ -99,6 +100,7 @@ const SOURCES = [
   // 🇯🇵 Nhật Bản
   SourceKakuyomu,
   SourceSyosetu,
+  SourceSyosetuToday,
   SourceSyosetuOrg,
   SourcePixiv,
   // 🌍 Âu Mỹ / Toàn cầu
@@ -323,6 +325,16 @@ function updateExtensionBadge(task) {
   }
 }
 
+function isChapterContentError(result) {
+  if (Array.isArray(result?.imageUrls) && result.imageUrls.length > 0) return false;
+  return !result || !result.content ||
+    result.content.includes("NỘI DUNG CHƯA TẢI ĐƯỢC") ||
+    result.content.includes("Hệ thống không tìm thấy nội dung") ||
+    result.content.includes("Lỗi tải nội dung") ||
+    result.content.includes("Lỗi:") ||
+    result.content.length < 100;
+}
+
 // ─── The Engine (Parallel Workers) ───────────────────────
 async function runBatchDownload() {
   if (!activeBatchTask || activeBatchTask.status !== 'running') return;
@@ -410,12 +422,7 @@ async function runBatchDownload() {
             continue;
           }
 
-          const isContentError = !result || !result.content ||
-            result.content.includes("NỘI DUNG CHƯA TẢI ĐƯỢC") ||
-            result.content.includes("Hệ thống không tìm thấy nội dung") ||
-            result.content.includes("Lỗi tải nội dung") ||
-            result.content.includes("Lỗi:") ||
-            result.content.length < 100;
+          const isContentError = isChapterContentError(result);
 
           if (isContentError) {
             retryCount++;
@@ -448,23 +455,44 @@ async function runBatchDownload() {
           };
         }
 
-        const isContentError = !result || !result.content ||
-          result.content.includes("NỘI DUNG CHƯA TẢI ĐƯỢC") ||
-          result.content.includes("Hệ thống không tìm thấy nội dung") ||
-          result.content.includes("Lỗi tải nội dung") ||
-          result.content.includes("Lỗi:") ||
-          result.content.length < 100;
+        const isContentError = isChapterContentError(result);
 
-        const prefix = isContentError ? "ERROR_" : "";
+        let prefix = isContentError ? "ERROR_" : "";
         const format = c.format || 'docx';
         const stt = c.chapter_number || i + 1;
         const nameFmt = c.nameFormat || "#{index}_{title}";
         const safeTitle = c.chapter_title.replace(/[\\/:*?"<>|]/g, "_");
         const baseName = nameFmt.replace(/\{index\}/g, stt).replace(/\{title\}/g, safeTitle).replace(/[\\/:*?"<>|]/g, "_");
-        const safeName = `${prefix}${baseName}.${format}`;
 
         let blob;
-        if (format === 'txt') {
+        let directDownloadUrl = null;
+        let outputExtension = format;
+        if ((format === 'jpg' || format === 'cbz') && isContentError) {
+          outputExtension = 'txt';
+          const errorContent = result?.content || `LỖI: Không tìm thấy ảnh chương - ${c.chapter_url}`;
+          blob = new Blob([errorContent], { type: 'text/plain;charset=utf-8' });
+        } else if (format === 'jpg' || format === 'cbz') {
+          try {
+            if (format === 'jpg') {
+              if (result.imageUrls.length === 1) {
+                // CDN trả file lớn dạng attachment; tải URL gốc để tránh data: URL vượt giới hạn Chrome.
+                directDownloadUrl = result.imageUrls[0];
+              } else {
+                blob = await buildMangaJpegBlob(result.imageUrls);
+              }
+            } else {
+              const cbzBuffer = await buildCbzBuffer(result.imageUrls);
+              blob = new Blob([cbzBuffer], { type: 'application/vnd.comicbook+zip' });
+            }
+          } catch (imageError) {
+            console.error(`[Worker ${workerId}] Lỗi tạo file ${format.toUpperCase()}:`, imageError);
+            prefix = "ERROR_";
+            outputExtension = 'txt';
+            blob = new Blob([
+              `LỖI: Không thể tạo file ${format.toUpperCase()} cho chương.\n\n${imageError.message}\n\n${c.chapter_url}`
+            ], { type: 'text/plain;charset=utf-8' });
+          }
+        } else if (format === 'txt') {
           const txtContent = `${result.chapter_title || "Chapter"}\n\n${result.content || ""}`;
           blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
         } else if (format === 'epub') {
@@ -474,18 +502,22 @@ async function runBatchDownload() {
           const docBuffer = await buildDocxBuffer(result);
           blob = new Blob([docBuffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
         }
-        const reader = new FileReader();
-        const dataUrl = await new Promise((resolve) => {
-          reader.onloadend = () => resolve(reader.result);
-          reader.readAsDataURL(blob);
-        });
+        const safeName = `${prefix}${baseName}.${outputExtension}`;
+        let downloadUrl = directDownloadUrl;
+        if (!downloadUrl) {
+          const reader = new FileReader();
+          downloadUrl = await new Promise((resolve) => {
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        }
 
         const baseFolder = c.folderName || "Excerpo";
         const bookSubFolder = (c.bookName || "Truyen").replace(/[\\/:*?"<>|]/g, "_");
         const action = c.conflictAction || 'uniquify';
 
         await chrome.downloads.download({
-          url: dataUrl,
+          url: downloadUrl,
           filename: `${baseFolder}/${bookSubFolder}/${safeName}`,
           conflictAction: action,
           saveAs: false
@@ -607,6 +639,7 @@ async function parseOnTab(tabId, source, chapter, alertMsg) {
     chapter_url: url,
     chapter_number: num,
     content: (parsedResult.paragraphs || []).join("\n\n"),
+    imageUrls: parsedResult.imageUrls || null,
     debug: parsedResult.debug || [],
     needOCR: parsedResult.needOCR || false,
     dataUrls: parsedResult.dataUrls || null
@@ -730,6 +763,116 @@ async function runExternalOCR(dataUrl) {
   } else {
     throw new Error(response.error + "\n" + response.stack);
   }
+}
+
+// ─── Manga image helpers ──────────────────────────────────
+async function fetchMangaImage(imageUrl) {
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await fetch(imageUrl, {
+        credentials: 'include',
+        cache: 'no-store'
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${imageUrl}`);
+
+      const blob = await response.blob();
+      if (!blob.size) throw new Error(`Ảnh rỗng: ${imageUrl}`);
+      if (blob.type.startsWith('text/')) throw new Error(`Máy chủ trả về ${blob.type} thay vì ảnh: ${imageUrl}`);
+      return { blob, url: imageUrl };
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) await keepAliveWait(attempt * 1000);
+    }
+  }
+  throw lastError;
+}
+
+function mangaImageExtension(blob, imageUrl) {
+  const mimeExtensions = {
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'image/avif': 'avif'
+  };
+  if (mimeExtensions[blob.type]) return mimeExtensions[blob.type];
+  try {
+    const ext = new URL(imageUrl).pathname.match(/\.([a-z0-9]{2,5})$/i)?.[1].toLowerCase();
+    if (ext) return ext === 'jpeg' ? 'jpg' : ext;
+  } catch { /* use fallback below */ }
+  return 'img';
+}
+
+async function buildMangaJpegBlob(imageUrls) {
+  if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+    throw new Error('Chương không có ảnh để xuất JPG.');
+  }
+
+  const assets = [];
+  for (const imageUrl of imageUrls) {
+    assets.push(await fetchMangaImage(imageUrl));
+  }
+
+  const onlyAsset = assets.length === 1 ? assets[0] : null;
+  if (onlyAsset && (
+    onlyAsset.blob.type === 'image/jpeg'
+    || onlyAsset.blob.type === 'image/jpg'
+    || /\.jpe?g(?:$|[?#])/i.test(onlyAsset.url)
+  )) {
+    return onlyAsset.blob;
+  }
+
+  if (typeof createImageBitmap !== 'function' || typeof OffscreenCanvas !== 'function') {
+    throw new Error('Trình duyệt không hỗ trợ ghép ảnh bằng OffscreenCanvas.');
+  }
+
+  const bitmaps = [];
+  try {
+    for (const asset of assets) bitmaps.push(await createImageBitmap(asset.blob));
+
+    const sourceWidth = Math.max(...bitmaps.map((bitmap) => bitmap.width));
+    const sourceHeight = bitmaps.reduce((sum, bitmap) => sum + bitmap.height, 0);
+    const maxCanvasSide = 32767;
+    const scale = Math.min(1, maxCanvasSide / sourceWidth, maxCanvasSide / sourceHeight);
+    const outputWidth = Math.max(1, Math.floor(sourceWidth * scale));
+    const outputHeight = Math.max(1, Math.floor(sourceHeight * scale));
+    const canvas = new OffscreenCanvas(outputWidth, outputHeight);
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Không thể khởi tạo canvas để ghép ảnh.');
+
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, outputWidth, outputHeight);
+    let y = 0;
+    for (const bitmap of bitmaps) {
+      const drawWidth = Math.max(1, Math.floor(bitmap.width * scale));
+      const drawHeight = Math.max(1, Math.floor(bitmap.height * scale));
+      const x = Math.floor((outputWidth - drawWidth) / 2);
+      context.drawImage(bitmap, x, y, drawWidth, drawHeight);
+      y += drawHeight;
+    }
+
+    return await canvas.convertToBlob({ type: 'image/jpeg', quality: 0.95 });
+  } finally {
+    bitmaps.forEach((bitmap) => bitmap.close());
+  }
+}
+
+async function buildCbzBuffer(imageUrls) {
+  if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+    throw new Error('Chương không có ảnh để xuất CBZ.');
+  }
+
+  const zip = new JSZip();
+  const digits = Math.max(3, String(imageUrls.length).length);
+  for (let index = 0; index < imageUrls.length; index++) {
+    const asset = await fetchMangaImage(imageUrls[index]);
+    const extension = mangaImageExtension(asset.blob, asset.url);
+    const pageName = `${String(index + 1).padStart(digits, '0')}.${extension}`;
+    zip.file(pageName, await asset.blob.arrayBuffer(), { compression: 'STORE' });
+  }
+  return await zip.generateAsync({ type: 'arraybuffer', compression: 'STORE' });
 }
 
 // ─── Docx helper ─────────────────────────────────────────

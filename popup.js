@@ -36,6 +36,7 @@ const SOURCES = [
   // 🇯🇵 Nhật Bản
   SourceKakuyomu,
   SourceSyosetu,
+  SourceSyosetuToday,
   SourceSyosetuOrg,
   SourcePixiv,
   // 🌍 Âu Mỹ / Toàn cầu
@@ -447,8 +448,8 @@ async function renderChapters(source, chapters, bookName, chapterDiv, tabId, url
       return;
     }
 
-    const storage = await chrome.storage.local.get(["cachedFolder", "cachedFormat", "cachedConflictAction", "cachedFileNameFormat"]);
-    const format = storage.cachedFormat || "docx";
+    const storage = await chrome.storage.local.get(["cachedFolder", "cachedFormat", "cachedMangaFormat", "cachedConflictAction", "cachedFileNameFormat"]);
+    const format = source.kind === "manga" ? (storage.cachedMangaFormat || "jpg") : (storage.cachedFormat || "docx");
     const folderName = storage.cachedFolder || "Excerpo";
     const conflictAction = storage.cachedConflictAction || "uniquify";
     const nameFormat = storage.cachedFileNameFormat || "#{index}_{title}";
@@ -769,9 +770,10 @@ function setupEventListeners() {
   setupExampleCollapsible(5);
 
   // Load initial settings
-  chrome.storage.local.get(["cachedFolder", "cachedFormat", "cachedConflictAction", "chapterDelay", "cachedFileNameFormat"], (s) => {
+  chrome.storage.local.get(["cachedFolder", "cachedFormat", "cachedMangaFormat", "cachedConflictAction", "chapterDelay", "cachedFileNameFormat"], (s) => {
     document.getElementById("settingFolder").value = s.cachedFolder || "Excerpo";
     document.getElementById("settingFormat").value = s.cachedFormat || "docx";
+    document.getElementById("settingMangaFormat").value = s.cachedMangaFormat || "jpg";
     document.getElementById("settingConflict").value = s.cachedConflictAction || "uniquify";
     document.getElementById("settingDelay").value = (s.chapterDelay !== undefined) ? s.chapterDelay : 60;
     document.getElementById("settingFileNameFormat").value = s.cachedFileNameFormat || "#{index}_{title}";
@@ -781,6 +783,7 @@ function setupEventListeners() {
   const saveSettings = () => {
     const folder = document.getElementById("settingFolder").value.trim() || "Excerpo";
     const format = document.getElementById("settingFormat").value;
+    const mangaFormat = document.getElementById("settingMangaFormat").value;
     const conflict = document.getElementById("settingConflict").value;
     const nameFormat = document.getElementById("settingFileNameFormat").value.trim() || "#{index}_{title}";
     let delay = parseInt(document.getElementById("settingDelay").value);
@@ -789,6 +792,7 @@ function setupEventListeners() {
     chrome.storage.local.set({
       cachedFolder: folder,
       cachedFormat: format,
+      cachedMangaFormat: mangaFormat,
       cachedConflictAction: conflict,
       chapterDelay: delay,
       cachedFileNameFormat: nameFormat
@@ -797,6 +801,7 @@ function setupEventListeners() {
 
   document.getElementById("settingFolder").addEventListener("input", saveSettings);
   document.getElementById("settingFormat").addEventListener("change", saveSettings);
+  document.getElementById("settingMangaFormat").addEventListener("change", saveSettings);
   document.getElementById("settingConflict").addEventListener("change", saveSettings);
   document.getElementById("settingDelay").addEventListener("input", saveSettings);
   document.getElementById("settingFileNameFormat").addEventListener("input", saveSettings);

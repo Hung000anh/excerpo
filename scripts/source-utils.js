@@ -120,7 +120,7 @@ async function parseChapters(url, config, progressCallback) {
 
 /**
  * Generic content extractor — injects logic into an already-open tab.
- * Returns { paragraphs, needOCR?, dataUrl?, debug? }
+ * Returns { paragraphs?, imageUrls?, needOCR?, dataUrl?, debug? }
  * @param {number} tabId
  * @param {object} contentConfig
  */
@@ -154,7 +154,9 @@ async function parseContentInTab(tabId, contentConfig) {
           try {
             const customFn = new Function(`return (${customExtractStr})`)();
             const res = await customFn(sel, t, removeArr, lineFilterPattern);
-            if (res && Array.isArray(res.paragraphs) && res.paragraphs.length > 0) return res;
+            const hasParagraphs = Array.isArray(res?.paragraphs) && res.paragraphs.length > 0;
+            const hasImages = Array.isArray(res?.imageUrls) && res.imageUrls.length > 0;
+            if (res && (hasParagraphs || hasImages)) return res;
           } catch (e) {
             debug.push(`[customExtract error] ${e.message}`);
           }

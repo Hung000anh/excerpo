@@ -519,6 +519,8 @@
             https://ncode.syosetu.com/n8976io/</span>
           <span class="example-url" data-url="https://novel18.syosetu.com/n6960gn/">novel18.syosetu.com →
             https://novel18.syosetu.com/n6960gn/</span>
+          <span class="example-url" data-url="https://syosetu.today/manga/%e3%82%ae%e3%83%ab%e3%83%89%e8%bf%bd%e6%94%be%e3%81%95%e3%82%8c%e3%81%9f%e9%9b%91%e7%94%a8%e4%bf%82%e3%81%ae%e4%b8%8b%e5%89%8b%e4%b8%8a%e8%b6%85%e4%b8%87%e8%83%bd%e3%81%aa%e7%94%9f%e6%b4%bb%e3%82%b9/">syosetu.today (manga) →
+            https://syosetu.today/manga/...</span>
           <span class="example-url" data-url="https://syosetu.org/novel/412211/">syosetu.org →
             https://syosetu.org/novel/412211/</span>
           <span class="example-url" data-url="https://h.syosetu.org/novel/357287/">h.syosetu.org →
@@ -700,6 +702,15 @@
       </div>
 
       <div class="form-group">
+        <label data-i18n="settingMangaFormatLabel">Đầu ra truyện tranh:</label>
+        <select id="settingMangaFormat">
+          <option value="jpg" data-i18n="mangaFormatJpg">JPG (mỗi chương một ảnh)</option>
+          <option value="cbz" data-i18n="mangaFormatCbz">CBZ (mỗi chương một file)</option>
+        </select>
+        <p style="font-size:10px;color:#888;margin-top:4px;" data-i18n="settingMangaFormatDesc">Lưu tại: Thư mục tải về/Tên truyện/&lt;tên file chương theo mẫu bên dưới&gt;.</p>
+      </div>
+
+      <div class="form-group">
         <label data-i18n="settingFileNameFormatLabel">Tên file tải về:</label>
         <input type="text" id="settingFileNameFormat" value="#{index}_{title}" placeholder="VD: chuong-{index} {title}">
         <p style="font-size:10px;color:#888;margin-top:4px;" data-i18n="settingFileNameFormatDesc">{index}: STT,
@@ -807,6 +818,7 @@
   <script src="sources/novel543.js"></script>
   <script src="sources/kakuyomu.js"></script>
   <script src="sources/syosetu.js"></script>
+  <script src="sources/syosetu_today.js"></script>
   <script src="sources/royalroad.js"></script>
   <script src="sources/scribblehub.js"></script>
   <script src="sources/ao3.js"></script>
