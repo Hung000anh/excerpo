@@ -99,7 +99,8 @@ Chân thành cảm ơn những đóng góp và ủng hộ từ các bạn để 
 | Tên người ủng hộ | Số tiền | Ngày ủng hộ |
 | :--- | :---: | :---: |
 | N*** T*** H*** G**** | 100,000 VNĐ | 24/07/2026 03:27:00 |
-| H*** T**** | 50,000 VNĐ | 24/07/2026 16:48:01 |
+| H*** T**** | 50,000 VNĐ | 24/07/2026 16:48:01 |\
+| N***** H*** T****| 50,000 VNĐ | 31/08/2026 10:48:00|\ 
 
 ## 👨‍💻 Người đóng góp mã nguồn (Contributors)
 Cảm ơn những đóng góp tuyệt vời từ cộng đồng để giúp công cụ ngày càng hoàn thiện hơn:
