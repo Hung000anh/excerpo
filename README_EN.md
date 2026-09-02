@@ -34,7 +34,7 @@ The primary purpose of this tool is to serve personal offline storage, language 
 * **Multi-platform:** Supports scanning and downloading from a wide range of online reading platforms grouped by country:
   - <img src="https://flagcdn.com/w20/cn.png" width="16" alt="CN"> **China (Simplified):** `17k`, `22biqu`, `23qb`, `52shuku`, `69shuba`, `69shumi`, `biquge`, `xbiquge`, `bookqq`, `fanqienovel`, `hetushu`, `ihuaben`, `ixdzs8`, `jjwxc`, `novel543`, `powanjuan`, `qidian`, `shubaow`, `shuhaige`, `uukanshu`, `xbanxia`.
   - <img src="https://flagcdn.com/w20/tw.png" width="16" alt="TW"> **Taiwan (Traditional):** `69shuba.tw`, `czbooks`, `po18`, `sto9`, `sto55`, `ttkan`, `twkan`.
-  - <img src="https://flagcdn.com/w20/jp.png" width="16" alt="JP"> **Japan:** `kakuyomu`, `pixiv`, `syosetu`, `syosetu.org`.
+  - <img src="https://flagcdn.com/w20/jp.png" width="16" alt="JP"> **Japan:** `kakuyomu`, `pixiv`, `syosetu`, `syosetu.org`, `syosetu.today` (manga).
   - <img src="https://flagcdn.com/w20/us.png" width="16" alt="US"> **US / Global:** `ao3`, `cardboardtranslation`, `fictionpress`, `foxaholic`, `freewebnovel`, `lnmtl`, `noveldex`, `novelight`, `novellunar`, `royalroad`, `scribblehub`.
   - <img src="https://flagcdn.com/w20/tr.png" width="16" alt="TR"> **Turkey:** `fenrirscans`.
   - <img src="https://flagcdn.com/w20/ru.png" width="16" alt="RU"> **Russia:** `ranobelib`.
