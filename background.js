@@ -31,6 +31,7 @@ importScripts(
   'sources/twkan.js',
   'sources/ttkan.js',
   'sources/69shubatw.js',
+  'sources/alicesw.js',
   // 🇯🇵 Nhật Bản
   'sources/kakuyomu.js',
   'sources/syosetu.js',
@@ -96,6 +97,7 @@ const SOURCES = [
   SourceSto9,
   SourceTwkan,
   SourceTtkan,
+  SourceAlicesw,
   // 🇯🇵 Nhật Bản
   SourceKakuyomu,
   SourceSyosetu,

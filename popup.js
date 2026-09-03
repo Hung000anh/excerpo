@@ -33,6 +33,7 @@ const SOURCES = [
   SourceTtkan,
   SourceCzbooks,
   Source69shubatw,
+  SourceAlicesw,
   // 🇯🇵 Nhật Bản
   SourceKakuyomu,
   SourceSyosetu,

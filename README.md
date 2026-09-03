@@ -3,7 +3,7 @@
 # <img src="icons/icon48.png" height="36" align="center" alt="Excerpo Icon" /> Excerpo
 **Công cụ trích xuất và tải truyện/text tự động từ đa nền tảng**
 
-[![Version](https://img.shields.io/badge/version-1.26.4-blue.svg)](#)
+[![Version](https://img.shields.io/badge/version-1.27.0-blue.svg)](#)
 [![Browser](https://img.shields.io/badge/browser-Chrome%20%7C%20Edge%20%7C%20Cốc%20Cốc%20%7C%20Brave%20%7C%20Opera%20%7C%20Vivaldi-brightgreen.svg)](#)
 [![OS](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
 [![License](https://img.shields.io/badge/license-Personal%20Use-red.svg)](#)
@@ -33,7 +33,7 @@ Mục đích chính của công cụ là phục vụ cho nhu cầu lưu trữ of
 ## 🚀 Tính năng nổi bật
 * **Đa nền tảng:** Hỗ trợ quét và tải mượt mà từ hàng loạt nền tảng đọc truyện trực tuyến, chia theo các quốc gia:
   - <img src="https://flagcdn.com/w20/cn.png" width="16" alt="CN"> **Trung Quốc (Giản thể):** `17k`, `22biqu`, `23qb`, `52shuku`, `69shuba`, `69shumi`, `biquge`, `xbiquge`, `bookqq`, `fanqienovel`, `hetushu`, `ihuaben`, `ixdzs8`, `jjwxc`, `novel543`, `powanjuan`, `qidian`, `shubaow`, `shuhaige`, `uukanshu`, `xbanxia`.
-  - <img src="https://flagcdn.com/w20/tw.png" width="16" alt="TW"> **Đài Loan (Phồn thể):** `69shuba.tw`, `czbooks`, `po18`, `sto9`, `sto55`, `ttkan`, `twkan`.
+  - <img src="https://flagcdn.com/w20/tw.png" width="16" alt="TW"> **Đài Loan (Phồn thể):** `69shuba.tw`, `alicesw`, `czbooks`, `po18`, `sto9`, `sto55`, `ttkan`, `twkan`.
   - <img src="https://flagcdn.com/w20/jp.png" width="16" alt="JP"> **Nhật Bản:** `kakuyomu`, `pixiv`, `syosetu`, `syosetu.org`.
   - <img src="https://flagcdn.com/w20/us.png" width="16" alt="US"> **Âu Mỹ / Toàn cầu:** `ao3`, `cardboardtranslation`, `fictionpress`, `foxaholic`, `freewebnovel`, `lnmtl`, `noveldex`, `novelight`, `novellunar`, `royalroad`, `scribblehub`.
   - <img src="https://flagcdn.com/w20/tr.png" width="16" alt="TR"> **Thổ Nhĩ Kỳ:** `fenrirscans`.

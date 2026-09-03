@@ -3,7 +3,7 @@
 # <img src="icons/icon48.png" height="36" align="center" alt="Excerpo Icon" /> Excerpo
 **跨平台小说/文本自动提取与下载工具**
 
-[![Version](https://img.shields.io/badge/version-1.26.4-blue.svg)](#)
+[![Version](https://img.shields.io/badge/version-1.27.0-blue.svg)](#)
 [![Browser](https://img.shields.io/badge/browser-Chrome%20%7C%20Edge%20%7C%20Cốc%20Cốc%20%7C%20Brave%20%7C%20Opera%20%7C%20Vivaldi-brightgreen.svg)](#)
 [![OS](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
 [![License](https://img.shields.io/badge/license-Personal%20Use-red.svg)](#)
@@ -32,7 +32,7 @@
 ## 🚀 核心功能
 * **多平台支持：** 支持扫描和流畅下载全球多个国家的小说网站：
   - <img src="https://flagcdn.com/w20/cn.png" width="16" alt="CN"> **中国（简体）：** `17k`, `22biqu`, `23qb`, `52shuku`, `69shuba`, `69shumi`, `biquge`, `xbiquge`, `bookqq`, `fanqienovel`, `hetushu`, `ihuaben`, `ixdzs8`, `jjwxc`, `novel543`, `powanjuan`, `qidian`, `shubaow`, `shuhaige`, `uukanshu`, `xbanxia`。
-  - <img src="https://flagcdn.com/w20/tw.png" width="16" alt="TW"> **中国台湾（繁体）：** `69shuba.tw`, `czbooks`, `po18`, `sto9`, `sto55`, `ttkan`, `twkan`。
+  - <img src="https://flagcdn.com/w20/tw.png" width="16" alt="TW"> **中国台湾（繁体）：** `69shuba.tw`, `alicesw`, `czbooks`, `po18`, `sto9`, `sto55`, `ttkan`, `twkan`。
   - <img src="https://flagcdn.com/w20/jp.png" width="16" alt="JP"> **日本：** `kakuyomu`, `pixiv`, `syosetu`, `syosetu.org`。
   - <img src="https://flagcdn.com/w20/us.png" width="16" alt="US"> **欧美/全球：** `ao3`, `cardboardtranslation`, `fictionpress`, `foxaholic`, `freewebnovel`, `lnmtl`, `noveldex`, `novelight`, `novellunar`, `royalroad`, `scribblehub`。
   - <img src="https://flagcdn.com/w20/tr.png" width="16" alt="TR"> **土耳其：** `fenrirscans`。
