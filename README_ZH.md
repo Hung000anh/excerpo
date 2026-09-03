@@ -3,7 +3,7 @@
 # <img src="icons/icon48.png" height="36" align="center" alt="Excerpo Icon" /> Excerpo
 **跨平台小说/文本自动提取与下载工具**
 
-[![Version](https://img.shields.io/badge/version-1.26.4-blue.svg)](#)
+[![Version](https://img.shields.io/badge/version-1.27.0-blue.svg)](#)
 [![Browser](https://img.shields.io/badge/browser-Chrome%20%7C%20Edge%20%7C%20Cốc%20Cốc%20%7C%20Brave%20%7C%20Opera%20%7C%20Vivaldi-brightgreen.svg)](#)
 [![OS](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
 [![License](https://img.shields.io/badge/license-Personal%20Use-red.svg)](#)

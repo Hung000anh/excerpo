@@ -7,7 +7,7 @@ and this project adheres to Semantic Versioning (`MAJOR.FEAT.FIX`).
 
 ---
 
-## [Unreleased]
+## [1.27.0] - 2026-09-03
 
 ### Added
 - Add support for the `alicesw.tw` source, including metadata, cover images, chapter lists, and chapter content extraction.
