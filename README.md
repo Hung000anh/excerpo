@@ -117,4 +117,6 @@ Người dùng chịu trách nhiệm hoàn toàn về các hành vi chia sẻ c�
 > Nếu bạn muốn tải các chương truyện khóa (VIP), xin vui lòng **mua chương** để tôn trọng chất xám của tác giả gốc trên website trước. Công cụ này chỉ trích xuất những gì màn hình của bạn được cấp quyền hiển thị.
 
 ---
+Tham gia cộng đồng Telegram: [Nhóm Telegram](https://t.me/+w-5v_uoLIkY3MTA1)
+
 *Phát triển bởi [Hung000anh](https://github.com/Hung000anh) - ☕ Cảm ơn bạn đã đồng hành!*

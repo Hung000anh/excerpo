@@ -115,4 +115,6 @@ Users bear full legal responsibility for publicly sharing downloaded data.
 > If you need to download locked (VIP) chapters, please **purchase the chapters** on the original website to support the author. This tool only extracts contents that your browser has reading permissions for.
 
 ---
+Join the Telegram community: [Telegram group](https://t.me/+w-5v_uoLIkY3MTA1)
+
 *Developed by [Hung000anh](https://github.com/Hung000anh) - ☕ Thank you for your companionship!*

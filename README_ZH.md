@@ -114,4 +114,6 @@ Excerpo **免费供个人使用**。为了维持开发成本，当您点击“�
 > 如果您需要下载锁定的（VIP）章节，请**购买原站章节**以支持原作者。本工具只能提取您的浏览器已拥有阅读权限的内容。
 
 ---
+加入 Telegram 社区：[Telegram 群组](https://t.me/+w-5v_uoLIkY3MTA1)
+
 *由 [Hung000anh](https://github.com/Hung000anh) 开发 - ☕ 感谢您的陪伴！*
