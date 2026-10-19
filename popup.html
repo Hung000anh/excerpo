@@ -361,6 +361,67 @@
       height: 100%;
       object-fit: contain;
     }
+
+    /* ── Translate Panel CSS ── */
+    #panel-translate {
+      padding: 12px 14px;
+      gap: 10px;
+    }
+
+    .trans-card {
+      background: #faf8f5;
+      border: 1px solid #ebdcd0;
+      border-radius: 6px;
+      padding: 9px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .trans-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .trans-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .trans-input, .trans-select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 12px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    .trans-textarea {
+      width: 100%;
+      min-height: 90px;
+      max-height: 140px;
+      resize: vertical;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 12px;
+      line-height: 1.45;
+      box-sizing: border-box;
+    }
+
+    .trans-status-badge {
+      font-size: 11px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
   </style>
 </head>
 
@@ -375,6 +436,10 @@
     <div class="nav-tab" data-tab="queue" title="Hàng đợi" data-i18n-title="tabQueueTitle">
       <span>📋</span>
       <span class="tab-label" data-i18n="tabQueue">Đợi</span>
+    </div>
+    <div class="nav-tab" data-tab="translate" title="Dịch thuật AI" data-i18n-title="tabTranslateTitle">
+      <span>🌐</span>
+      <span class="tab-label" data-i18n="tabTranslate">Dịch</span>
     </div>
     <div class="nav-tab" data-tab="settings" title="Cài đặt" data-i18n-title="tabSettingsTitle">
       <span>⚙️</span>
@@ -790,6 +855,122 @@
       </ol>
     </div> <!-- Close of panel-disclaimer -->
 
+    <!-- Tab Panel: Translate (BlackStone AI) -->
+    <div id="panel-translate" class="tab-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <h3 style="margin-bottom:0;" data-i18n="translateHeading">🌐 Dịch thuật AI (BlackStone)</h3>
+        <span id="transStatusBadge" class="trans-status-badge" style="display:none;"></span>
+      </div>
+
+      <!-- Config Box (API Key & Books) -->
+      <div class="trans-card">
+        <label class="trans-label" data-i18n="translateApiKeyLabel">Khóa API BlackStone:</label>
+        <div class="trans-row">
+          <input type="password" id="transApiKey" class="trans-input" placeholder="bks_live_..." data-i18n-placeholder="translateApiKeyPlaceholder" style="flex:1;" />
+          <button id="btnToggleApiKey" type="button" style="padding:6px 9px;background:#eee;color:#333;" title="Ẩn/Hiện Key">👁️</button>
+          <button id="btnSaveApiKey" type="button" data-i18n="translateSaveKeyBtn">Lưu</button>
+        </div>
+
+        <div class="trans-row" style="margin-top:2px;">
+          <div style="flex:1;">
+            <label class="trans-label" data-i18n="translateModeTypeLabel">Thể loại:</label>
+            <select id="transType" class="trans-select">
+              <option value="novel" data-i18n="translateModeNovel">Novel (Tiểu thuyết / Văn bản)</option>
+              <option value="manga" data-i18n="translateModeManga">Manga (Bóng thoại)</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label class="trans-label" data-i18n="translateLevelLabel">Cấp độ:</label>
+            <select id="transLevel" class="trans-select">
+              <option value="basic" data-i18n="translateLevelBasic">Basic (Gemini Flash Lite)</option>
+              <option value="advance" data-i18n="translateLevelAdvance">Advance (Pro - Từ điển)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Advance Options (Book ID & Meta) -->
+        <div id="transAdvanceOptions" style="display:none; flex-direction:column; gap:6px; margin-top:4px; padding-top:6px; border-top:1px dashed #e8ddd5;">
+          <div class="trans-row">
+            <div style="flex:1;">
+              <label class="trans-label" data-i18n="translateBookSelectLabel">Chọn sách (Advance):</label>
+              <select id="transBookSelect" class="trans-select">
+                <option value="" data-i18n="translateBookSelectPlaceholder">-- Chọn cuốn sách đã tạo --</option>
+              </select>
+            </div>
+            <button id="btnRefreshBooks" type="button" style="padding:6px 8px; font-size:11px; margin-top:18px;" data-i18n="translateBtnRefreshBooks">🔄 Tải DS</button>
+            <button id="btnCreateBook" type="button" style="padding:6px 8px; font-size:11px; margin-top:18px; background:#28a745;" data-i18n="translateBtnCreateBook">➕ Tạo sách</button>
+          </div>
+          <input type="text" id="transManualBookId" class="trans-input" placeholder="Hoặc nhập Book ID (UUID)..." data-i18n-placeholder="translateBookManualPlaceholder" style="font-size:11px;" />
+
+          <div id="transNovelAdvanceRow" class="trans-row" style="display:none;">
+            <div style="flex:1;">
+              <label class="trans-label" data-i18n="translateChapterNumLabel">Số chương:</label>
+              <input type="text" id="transChapterNum" class="trans-input" placeholder="VD: 1" style="font-size:11px;" />
+            </div>
+          </div>
+
+          <div id="transMangaAdvanceRow" style="display:none; flex-direction:column; gap:4px;">
+            <div>
+              <label class="trans-label" data-i18n="translateGenreLabel">Thể loại (Manga Advance):</label>
+              <input type="text" id="transGenre" class="trans-input" placeholder="VD: Tu tiên, Hành động" style="font-size:11px;" />
+            </div>
+            <div>
+              <label class="trans-label" data-i18n="translateContextLabel">Bối cảnh / Phân cảnh:</label>
+              <input type="text" id="transContext" class="trans-input" placeholder="VD: Cảnh chiến đấu trên đỉnh núi" style="font-size:11px;" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Translate from Local Book Folders -->
+      <div class="trans-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px;">
+          <label class="trans-label" style="font-weight:700; color:#1a5276; margin-bottom:0;" data-i18n="translateBookFolderLabel">Chọn truyện cần dịch:</label>
+          <div style="display:flex; gap:4px;">
+            <button id="btnGrantDirAccess" type="button" style="font-size:10px; padding:3px 6px; background:#e8f0fe; color:#1a73e8; border:1px solid #c2d7fa;" data-i18n="translateChooseDirBtn">📂 Thư mục Excerpo</button>
+            <button id="btnChangeDir" type="button" style="font-size:10px; padding:3px 6px; background:#f5f5f5; color:#555; border:1px solid #ddd;" title="Chọn một thư mục bất kỳ khác trên máy" data-i18n="translateChooseOtherDirBtn">🔄 Đổi thư mục</button>
+          </div>
+        </div>
+
+        <select id="transBookFolderSelect" class="trans-select" style="font-size:11.5px; border-color:#1a73e8; margin-top:4px;">
+          <option value="" data-i18n="translateBookFolderPlaceholder">-- Chọn bộ truyện trong máy --</option>
+        </select>
+        <div id="transFolderNotice" style="font-size:10.5px; color:#666;"></div>
+
+        <!-- Chapter Range Selector -->
+        <div id="transRangeWrap" style="display:none; flex-direction:column; gap:6px; margin-top:2px;">
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div style="flex:1;">
+              <label class="trans-label" data-i18n="translateFromChapter">Từ chương:</label>
+              <input type="number" id="transFromCh" class="trans-input" min="1" value="1" />
+            </div>
+            <div style="flex:1;">
+              <label class="trans-label" data-i18n="translateToChapter">Đến chương:</label>
+              <input type="number" id="transFromTo" class="trans-input" min="1" value="1" />
+            </div>
+          </div>
+          <p id="transSavePathNotice" style="font-size:10px; color:#555; background:#eef7ed; border:1px solid #d4edda; padding:4px 6px; border-radius:4px; margin:0;"></p>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <button id="btnStartBatchTrans" type="button" style="flex:1; padding:8px; font-weight:bold; background:#28a745; display:none;" data-i18n="translateBtnStartBatch">🚀 Dịch hàng loạt & Lưu file</button>
+          <button id="btnStopBatchTrans" type="button" style="padding:8px 12px; background:#dc3545; color:#fff; display:none;" data-i18n="translateBtnStopBatch">⏹ Dừng</button>
+        </div>
+
+        <!-- Progress bar for batch translation -->
+        <div id="transProgressWrap" style="display:none; margin-top:4px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:600; color:#333; margin-bottom:3px;">
+            <span id="transProgressText">Đang dịch...</span>
+            <span id="transProgressPercent">0%</span>
+          </div>
+          <div style="height:6px; background:#e0e0e0; border-radius:3px; overflow:hidden;">
+            <div id="transProgressBar" style="height:100%; width:0%; background:#1a73e8; transition:width 0.3s; border-radius:3px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- Close of panel-translate -->
+
   </div> <!-- Close of mainContent -->
 
 
@@ -849,6 +1030,7 @@
   <script src="sources/noveldex.js"></script>
   <script src="sources/novelight.js"></script>
   <script src="translations.js"></script>
+  <script src="translate.js"></script>
   <script src="popup.js"></script>
 </body>
 

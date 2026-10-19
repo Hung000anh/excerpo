@@ -166,8 +166,187 @@ const adsLinks = [
 ];
 
 let activeBatchTask = null;
+let activeTranslateTask = null;
 let storageInitResolve;
 let storageInitPromise = new Promise(r => storageInitResolve = r);
+
+async function saveTranslateTaskToStorage() {
+  if (activeTranslateTask) {
+    await chrome.storage.local.set({ activeTranslateTask });
+  }
+}
+
+async function startBackgroundTranslation(taskData) {
+  const { apiKey, type, level, bookId, bookName, folderName, conflictAction, files } = taskData;
+  activeTranslateTask = {
+    apiKey,
+    type,
+    level,
+    bookId,
+    bookName,
+    folderName: folderName || "Excerpo",
+    conflictAction: conflictAction || "overwrite",
+    files,
+    nextIdx: 0,
+    doneCount: 0,
+    currentFileName: "",
+    status: 'running',
+    startTime: Date.now()
+  };
+
+  saveTranslateTaskToStorage();
+  chrome.runtime.sendMessage({ type: 'TRANSLATE_TASK_PROGRESS', data: activeTranslateTask }).catch(() => { });
+
+  runBackgroundTranslationLoop();
+}
+
+async function runBackgroundTranslationLoop() {
+  if (!activeTranslateTask || activeTranslateTask.status !== 'running') return;
+
+  const BASE_URL = "https://api.hachthachthon.site/api/v1/public";
+  const { apiKey, type, level, bookId, bookName, folderName, files } = activeTranslateTask;
+
+  while (activeTranslateTask && activeTranslateTask.status === 'running') {
+    const i = activeTranslateTask.nextIdx;
+    if (i >= files.length) {
+      activeTranslateTask.status = 'completed';
+      saveTranslateTaskToStorage();
+      chrome.runtime.sendMessage({ type: 'TRANSLATE_TASK_PROGRESS', data: activeTranslateTask }).catch(() => { });
+      break;
+    }
+
+    const item = files[i];
+    activeTranslateTask.currentFileName = item.name;
+    saveTranslateTaskToStorage();
+    chrome.runtime.sendMessage({ type: 'TRANSLATE_TASK_PROGRESS', data: activeTranslateTask }).catch(() => { });
+
+    try {
+      const isNovel = type === "novel";
+      const isAdvance = level === "advance";
+      let endpoint = "";
+      let payload = {};
+
+      const cleanTitle = item.name.replace(/\.[^/.]+$/, "");
+      const content = item.content;
+
+      if (isNovel) {
+        if (isAdvance) {
+          endpoint = `${BASE_URL}/translate/novel/advance`;
+          payload = {
+            book_id: bookId,
+            chapter_number: String(item.chapterNum || i + 1),
+            title: cleanTitle,
+            content: content,
+            model: "pro"
+          };
+        } else {
+          endpoint = `${BASE_URL}/translate/novel/basic`;
+          payload = {
+            title: cleanTitle,
+            content: content,
+            model: "lite"
+          };
+        }
+      } else {
+        const lines = content.split("\n").map(l => l.trim()).filter(Boolean);
+        const bubbles = lines.map((line, idx) => ({ id: `b${idx + 1}`, text: line }));
+        if (isAdvance) {
+          endpoint = `${BASE_URL}/translate/manga/advance`;
+          payload = {
+            book_id: bookId,
+            genre: "Hành động",
+            context: "Phân cảnh đối thoại",
+            fallback_mode: "original",
+            bubbles: bubbles,
+            model: "pro"
+          };
+        } else {
+          endpoint = `${BASE_URL}/translate/manga/basic`;
+          payload = {
+            fallback_mode: "original",
+            bubbles: bubbles,
+            model: "lite"
+          };
+        }
+      }
+
+      const resp = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": apiKey
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) {
+        if (resp.status === 429) {
+          console.warn("[TranslateBg] Rate limited 429, waiting 60s...");
+          await keepAliveWait(60000);
+          continue; // retry this file
+        } else if (resp.status === 402) {
+          activeTranslateTask.status = 'error';
+          activeTranslateTask.errorMsg = 'Hết credit ví dịch thuật!';
+          saveTranslateTaskToStorage();
+          chrome.runtime.sendMessage({ type: 'TRANSLATE_TASK_PROGRESS', data: activeTranslateTask }).catch(() => { });
+          break;
+        }
+      }
+
+      const resData = await resp.json();
+      let translatedText = "";
+
+      // BlackStone API trả về dạng { success: true, data: { chapter_title_translated, content_translated } }
+      const payloadData = resData.data || resData;
+
+      if (payloadData.content_translated || payloadData.translated_content || payloadData.content) {
+        const titleStr = payloadData.chapter_title_translated || payloadData.title_translated || cleanTitle;
+        const mainContentStr = payloadData.content_translated || payloadData.translated_content || payloadData.content || "";
+        translatedText = `${titleStr}\n\n${mainContentStr}`;
+      } else if (Array.isArray(payloadData.bubbles)) {
+        translatedText = payloadData.bubbles.map(b => (b.speaker ? `[${b.speaker}]: ` : "") + (b.text || b.translated_text || "")).join("\n");
+      } else if (typeof resData === "string") {
+        translatedText = resData;
+      } else {
+        translatedText = JSON.stringify(resData, null, 2);
+      }
+
+      // Lưu file kết quả dịch thông qua chrome.downloads (tự động vào Downloads/<folderName>/translate/<bookName>/...)
+      const blob = new Blob([translatedText], { type: 'text/plain;charset=utf-8' });
+      const reader = new FileReader();
+      const dataUrl = await new Promise((resolve) => {
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+
+      const safeBook = (bookName || "Truyen").replace(/[\\/:*?"<>|]/g, "_");
+      const safeTitle = cleanTitle.replace(/[\\/:*?"<>|]/g, "_");
+      const action = activeTranslateTask.conflictAction || 'overwrite';
+
+      await chrome.downloads.download({
+        url: dataUrl,
+        filename: `${folderName}/translate/${safeBook}/${safeTitle}.txt`,
+        conflictAction: action,
+        saveAs: false
+      });
+
+      activeTranslateTask.doneCount++;
+      activeTranslateTask.nextIdx++;
+      saveTranslateTaskToStorage();
+      chrome.runtime.sendMessage({ type: 'TRANSLATE_TASK_PROGRESS', data: activeTranslateTask }).catch(() => { });
+
+    } catch (err) {
+      console.error("[TranslateBg] Lỗi dịch file:", err);
+      activeTranslateTask.nextIdx++;
+      saveTranslateTaskToStorage();
+    }
+
+    // Delay 12s giữa các chương để không bao giờ chạm rate limit 5 req/phút của BlackStone
+    if (activeTranslateTask.nextIdx < files.length && activeTranslateTask.status === 'running') {
+      await keepAliveWait(12000);
+    }
+  }
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'KEEPALIVE_PING') {
@@ -283,6 +462,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else {
       sendResponse({ status: 'ignored' });
     }
+  }
+
+  // ── BACKGROUND TRANSLATION ENGINE ──
+  if (message.type === 'START_TRANSLATE_TASK') {
+    startBackgroundTranslation(message.data);
+    sendResponse({ status: 'started' });
+  }
+
+  if (message.type === 'STOP_TRANSLATE_TASK') {
+    if (activeTranslateTask && activeTranslateTask.status === 'running') {
+      activeTranslateTask.status = 'stopping';
+      saveTranslateTaskToStorage();
+      chrome.runtime.sendMessage({ type: 'TRANSLATE_TASK_PROGRESS', data: activeTranslateTask }).catch(() => { });
+    }
+    sendResponse({ status: 'stopped' });
+  }
+
+  if (message.type === 'GET_TRANSLATE_STATUS') {
+    sendResponse(activeTranslateTask);
   }
 
   if (message.type === 'GET_TASK_STATUS') {
